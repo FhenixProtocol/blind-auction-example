@@ -10,6 +10,7 @@
     "task:mint": "hardhat task:mint",
     "task:getBalance": "hardhat task:getBalance",
     "task:transfer": "hardhat task:transfer",
+    "task:getFunds": "hardhat task:getFunds",
 
     "task:bid": "hardhat task:bid",
     "task:endAuction": "hardhat task:endAuction",

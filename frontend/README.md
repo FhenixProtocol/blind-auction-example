@@ -19,7 +19,9 @@ To deploy:
 ```bash
 # from the base directory (not frontend)
 pnpm compile
-pnpm deploy
+# start localfhenix (if you don't have it running already)
+pnpm localfhenix:start
+pnpm task:deploy 
 # this copies the contracts & deployment information to the frontend
 pnpm updateContracts 
 ```

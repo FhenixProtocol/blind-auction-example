@@ -1,23 +1,38 @@
-# Nuxt 3 Minimal Starter
+# FHE Auction Demo UI
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This code is based on the [Fhenix Nuxt 3 template](https://github.com/FhenixProtocol/fhenix-nuxt3-template).
+
+It integrates the contracts that were compiled from [Fhenix hardhat template](https://github.com/FhenixProtocol/fhenix-hardhat-example).
 
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
+```
 
-# yarn
-yarn install
+## Compile & Prepare Contracts 
 
-# bun
-bun install
+To deploy:
+
+```bash
+# from the base directory (not frontend)
+pnpm compile
+pnpm deploy
+# this copies the contracts & deployment information to the frontend
+pnpm updateContracts 
+```
+
+## Run Backend Server
+
+We use a database to store the auction information. You can start the backend server on `http://localhost:3001`:
+
+```bash
+# from the base directory (not frontend)
+cd backend
+pnpm install
+pnpm start
 ```
 
 ## Development Server
@@ -25,17 +40,7 @@ bun install
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
@@ -43,33 +48,12 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
 Locally preview production build:
 
 ```bash
-# npm
-npm run preview
-
 # pnpm
 pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

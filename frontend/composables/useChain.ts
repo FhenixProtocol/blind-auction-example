@@ -1,13 +1,18 @@
 import { ref } from "vue";
 import { ethers } from "ethers";
 
-import { FhenixClient, generatePermit } from "fhenixjs";
 import type { SupportedProvider } from "fhenixjs";
+import { FhenixClient, generatePermit } from "fhenixjs";
 
 import AuctionArtifact from "~/contracts/Auction.json";
 import ExampleToken from "~/contracts/FHERC20.json";
 import TokenContractDeployment from "~/contracts/FHERC20_DEPLOY.json";
-import { type ExampleToken as TokenContract } from "../../typechain-types";
+import {
+  type Auction,
+  type Auction as AuctionContract,
+  Auction__factory,
+  type ExampleToken as TokenContract,
+} from "../../typechain-types";
 
 type ExtendedProvider = SupportedProvider & {
   getTransactionReceipt(txHash: string): Promise<ethers.TransactionReceipt>;
@@ -40,6 +45,10 @@ export default function useChain() {
     tokenAddress,
     mintEncrypted,
     getTokenBalance,
+    deployAuctionContract,
+    bidEncrypted,
+    endAuction,
+    getMyBid,
     fnxConnect,
     initFHEClient,
     getFheClient,
@@ -64,6 +73,77 @@ function getFheClient() {
   return fheClient.value;
 }
 
+async function isAuctionOver() {
+  try {
+    if (provider !== null && fheClient.value !== null) {
+      const signer = await provider.getSigner();
+      const auctionContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+
+      // todo: this doesn't really exist in the contract
+      return await auctionContract.isAuctionOver();
+    } else {
+      console.error("Error getting auction status: provider or fheClient not found");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error getting auction status:", error);
+    return false;
+  }
+}
+
+async function getAuctionWinner(contract: string): Promise<string | undefined> {
+  try {
+    if (provider !== null && fheClient.value !== null && address.value !== "") {
+      const signer = await provider.getSigner();
+      const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
+
+      return await auctionContract.getWinner(address.value);
+    } else {
+      console.error("Error ending auction: provider or fheClient not found");
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error ending auction:", error);
+    return undefined;
+  }
+}
+
+async function endAuction(contract: string) {
+  try {
+    if (provider !== null && fheClient.value !== null && address.value !== "") {
+      const signer = await provider.getSigner();
+      const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
+
+      await auctionContract.endAuction(address.value);
+    } else {
+      console.error("Error ending auction: provider or fheClient not found");
+    }
+  } catch (error) {
+    console.error("Error ending auction:", error);
+  }
+}
+
+async function getMyBid(contract: string): Promise<string> {
+  try {
+    if (provider !== null && fheClient.value !== null && address.value !== "") {
+      const signer = await provider.getSigner();
+      const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
+
+      const balance = await auctionContract.getMyBidDebug(address.value);
+
+      console.log(`bid: ${balance.toString()}`);
+
+      return balance.toString();
+    } else {
+      console.error("Error getting bid: provider or fheClient not found");
+      return "0";
+    }
+  } catch (error) {
+    console.error("Error getting token balance:", error);
+    return "0";
+  }
+}
+
 async function mintEncrypted() {
   try {
     if (provider !== null && fheClient.value !== null) {
@@ -79,6 +159,47 @@ async function mintEncrypted() {
   } catch (error) {
     console.error("Error minting encrypted:", error);
   }
+}
+
+async function deployAuctionContract(dueTime: number): Promise<Auction> {
+  let provider = getProvider();
+  if (!provider) {
+    throw new Error("No provider found");
+  }
+
+  const signer = await provider.getSigner();
+
+  const contractFactory = new Auction__factory(AuctionArtifact.abi, AuctionArtifact.bytecode, signer);
+  return (await contractFactory.deploy(TokenContractDeployment.address, dueTime)) as Auction;
+}
+
+async function bidEncrypted(contract: string, amount: number) {
+  let provider = getProvider();
+  if (!provider) {
+    console.error("No provider found");
+    throw new Error("No provider found");
+  }
+
+  if (!fheClient.value) {
+    console.error("No FHE client found");
+    throw new Error("No FHE client found");
+  }
+
+  const signer = await provider.getSigner();
+
+  let auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
+  const auctionWithSigner = auctionContract.connect(signer) as AuctionContract;
+
+  const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+  const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
+
+  let encryptedAmount = await fheClient.value.encrypt_uint32(amount);
+
+  let tx = await tokenWithSigner.approveEncrypted(contract, encryptedAmount);
+  await tx.wait();
+
+  tx = await auctionWithSigner.bid(encryptedAmount);
+  await tx.wait();
 }
 
 async function getTokenBalance() {

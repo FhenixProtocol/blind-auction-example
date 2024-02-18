@@ -37,7 +37,7 @@ import useChain from "~/composables/useChain";
 import useBackend from "~/composables/useBackend";
 
 const { setAuction } = useBackend();
-const { address, getProvider } = useChain();
+const { address, deployAuctionContract } = useChain();
 const { hide } = useModalController();
 
 const props = defineProps({
@@ -46,14 +46,6 @@ const props = defineProps({
     required: false,
   },
 });
-
-// // Props received from parent
-// const props = defineProps({
-//   show: {
-//     type: Boolean,
-//     required: true,
-//   },
-// });
 
 const state = reactive({ deploying: false, dueTime: 0, name: "" });
 
@@ -71,19 +63,8 @@ async function onSend() {
       contract: "",
     };
 
-    let provider = getProvider();
-    if (!provider) {
-      console.error("No provider found");
-    }
-
-    const signer = await provider.getSigner();
-
-    const contractFactory = new Auction__factory(AuctionArtifact.abi, AuctionArtifact.bytecode, signer);
-    const contract = (await contractFactory.deploy(TokenContractDeployment.address, state.dueTime)) as Auction;
-
-    console.log(`contract deployed at ${contract.target}`);
-
-    product.contract = contract.target;
+    const contract = await deployAuctionContract(product.dueTime);
+    product.contract = await contract.getAddress();
 
     console.log(`Posting product with ${JSON.stringify(product)}`);
     await setAuction(JSON.stringify(product));

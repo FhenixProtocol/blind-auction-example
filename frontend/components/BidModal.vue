@@ -16,7 +16,8 @@
         />
       </div>
       <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary">Submit Bid</button>
+        <button v-if="!state.loading" type="submit" class="btn btn-primary">Submit Bid</button>
+        <button v-else class="btn btn-primary" :disabled="true"><BSpinner /></button>
       </div>
     </form>
   </BModal>
@@ -24,15 +25,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import AuctionArtifact from "~/contracts/Auction.json";
-import ExampleToken from "~/contracts/FHERC20.json";
 import useChain from "~/composables/useChain";
-import { ethers } from "ethers";
-import TokenContractDeployment from "~/contracts/FHERC20_DEPLOY.json";
-import type { ExampleToken as TokenContract, Auction as AuctionContract } from "../../typechain-types";
 
-const { getProvider } = useChain();
-const { encrypt, encryptedText } = useFHE();
+const { bidEncrypted } = useChain();
 
 interface AuctionData {
   contract: string;
@@ -40,7 +35,7 @@ interface AuctionData {
 }
 // Ref for bid amount
 const bidAmount = ref(0);
-const state = reactive({ show: true });
+const state = reactive({ loading: false });
 const { hide } = useModalController();
 
 // Props received from parent
@@ -60,44 +55,24 @@ const submitBid = async () => {
   // Placeholder: Implement your bid submission logic here
   // console.log(`Bid of ${bidAmount.value} submitted for ${props.auctionData.title}`);
   // Reset bid amount after submission for demonstration purposes
-
-  let provider = getProvider();
-  if (!provider) {
-    console.error("No provider found");
-  }
-
-  const signer = await provider.getSigner();
-
-  const contract = new ethers.Contract("0xCD40D5BC32240c5B8e2f3CFd780f0C4702F51b42", AuctionArtifact.abi, signer);
-  const auctionWithSigner = contract.connect(signer) as AuctionContract;
-
-  const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
-  const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
-
-  await encrypt(bidAmount);
-
-  if (encryptedText.value === "") {
-    console.error("No input encrypted");
+  if (!props.auctionData?.contract) {
+    console.error(`Auction contract address not provided`);
     return;
   }
+  state.loading = true;
 
-  console.log(`approving for ${props.auctionData?.contract}`);
-
-  let tx = await tokenWithSigner.approveEncrypted("0xCD40D5BC32240c5B8e2f3CFd780f0C4702F51b42", {
-    data: encryptedText.value,
-  });
-  await tx.wait();
-
-  tx = await auctionWithSigner.bid({ data: encryptedText.value });
-  await tx.wait();
-
-  console.log(`done bidding`);
-
-  if (props.onDone) {
-    props.onDone();
+  try {
+    await bidEncrypted(props.auctionData?.contract, bidAmount.value);
+    console.log(`done bidding`);
+  } catch (e) {
+    console.error(`Error submitting bid: ${e}`);
+  } finally {
+    state.loading = false;
+    if (props.onDone) {
+      props.onDone();
+    }
+    hide();
   }
-
-  hide();
 };
 </script>
 

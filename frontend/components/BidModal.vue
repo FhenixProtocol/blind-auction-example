@@ -1,9 +1,9 @@
 <template>
   <BModal title="Place Your Bid" hideFooter>
-    <form @submit.prevent="hide">
+    <form @submit.prevent="submitBid">
       <div class="mb-3">
         <label for="auctionItem" class="form-label">Auction Item</label>
-        <input type="text" class="form-control" id="auctionItem" v-model="auctionData.title" readonly />
+        <input type="text" class="form-control" id="auctionItem" v-model="auctionData.contract" readonly />
       </div>
       <div class="mb-3">
         <label for="bidAmount" class="form-label">Bid Amount</label>
@@ -24,9 +24,18 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import AuctionArtifact from "~/contracts/Auction.json";
+import ExampleToken from "~/contracts/FHERC20.json";
+import useChain from "~/composables/useChain";
+import { ethers } from "ethers";
+import TokenContractDeployment from "~/contracts/FHERC20_DEPLOY.json";
+import type { ExampleToken as TokenContract, Auction as AuctionContract } from "../../typechain-types";
+
+const { getProvider } = useChain();
+const { encrypt, encryptedText } = useFHE();
 
 interface AuctionData {
-  title: string;
+  contract: string;
   // Add other properties of auctionData here with their types
 }
 // Ref for bid amount
@@ -40,14 +49,54 @@ const props = defineProps({
     type: Object as () => AuctionData,
     required: true,
   },
+  onDone: {
+    type: Function,
+    required: false,
+  },
 });
 
 // Placeholder submit bid function
-const submitBid = () => {
+const submitBid = async () => {
   // Placeholder: Implement your bid submission logic here
-  console.log(`Bid of ${bidAmount.value} submitted for ${props.auctionData.title}`);
+  // console.log(`Bid of ${bidAmount.value} submitted for ${props.auctionData.title}`);
   // Reset bid amount after submission for demonstration purposes
-  bidAmount.value = 0;
+
+  let provider = getProvider();
+  if (!provider) {
+    console.error("No provider found");
+  }
+
+  const signer = await provider.getSigner();
+
+  const contract = new ethers.Contract("0xCD40D5BC32240c5B8e2f3CFd780f0C4702F51b42", AuctionArtifact.abi, signer);
+  const auctionWithSigner = contract.connect(signer) as AuctionContract;
+
+  const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+  const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
+
+  await encrypt(bidAmount);
+
+  if (encryptedText.value === "") {
+    console.error("No input encrypted");
+    return;
+  }
+
+  console.log(`approving for ${props.auctionData?.contract}`);
+
+  let tx = await tokenWithSigner.approveEncrypted("0xCD40D5BC32240c5B8e2f3CFd780f0C4702F51b42", {
+    data: encryptedText.value,
+  });
+  await tx.wait();
+
+  tx = await auctionWithSigner.bid({ data: encryptedText.value });
+  await tx.wait();
+
+  console.log(`done bidding`);
+
+  if (props.onDone) {
+    props.onDone();
+  }
+
   hide();
 };
 </script>

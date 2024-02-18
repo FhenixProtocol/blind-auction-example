@@ -7,7 +7,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const [signer] = await ethers.getSigners();
 
   if (hre.network.name === "localfhenix") {
-    if (await signer.getBalance() < ethers.utils.parseEther("1.0")) {
+    if (
+      (await ethers.provider.getBalance(signer.address)) <
+      ethers.parseEther("1.0")
+    ) {
       await fhenixjs.getFunds(signer.address);
     }
   }

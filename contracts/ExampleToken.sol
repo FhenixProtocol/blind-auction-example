@@ -19,4 +19,8 @@ contract ExampleToken is FHERC20, AccessControl {
             _mintEncrypted(recipient, amount);
         }
     }
+
+    function mintEncryptedDebug(inEuint32 memory amount) public {
+        _mintEncrypted(msg.sender, amount);
+    }
 }

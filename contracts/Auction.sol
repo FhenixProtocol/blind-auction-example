@@ -2,6 +2,7 @@
 
 pragma solidity >=0.8.13 <0.9.0;
 
+import { Permissioned, Permission } from "@fhenixprotocol/contracts/access/Permissioned.sol";
 import { inEuint32, euint32, FHE } from "@fhenixprotocol/contracts/FHE.sol";
 import { IFHERC20 } from "./IFHERC20.sol";
 import "./ConfAddress.sol";
@@ -11,7 +12,7 @@ struct HistoryEntry {
     bool refunded;
 }
 
-contract Auction {
+contract Auction is Permissioned {
     address payable public auctioneer;
     mapping(address => HistoryEntry) internal auctionHistory;
     euint32 internal CONST_0_ENCRYPTED;
@@ -106,6 +107,21 @@ contract Auction {
 
         highestBidder = ConfAddress.conditionalUpdate(wasBidChanged, highestBidder, eaddr);
         highestBid = newHeighestBid;
+    }
+
+    function getMyBidDebug (address account)
+    external
+    view
+    returns (uint256) {
+        return FHE.decrypt(auctionHistory[account].amount);
+    }
+
+    function getMyBid (address account, Permission memory auth)
+    external
+    view
+    onlyPermitted(auth, account)
+    returns (uint256) {
+        return FHE.decrypt(auctionHistory[account].amount);
     }
 
     function getWinner()

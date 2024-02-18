@@ -1,8 +1,13 @@
 import { ref } from "vue";
 import { ethers } from "ethers";
 
-import { FhenixClient } from "fhenixjs";
+import { FhenixClient, generatePermit } from "fhenixjs";
 import type { SupportedProvider } from "fhenixjs";
+
+import AuctionArtifact from "~/contracts/Auction.json";
+import ExampleToken from "~/contracts/FHERC20.json";
+import TokenContractDeployment from "~/contracts/FHERC20_DEPLOY.json";
+import { type ExampleToken as TokenContract } from "../../typechain-types";
 
 type ExtendedProvider = SupportedProvider & {
   getTransactionReceipt(txHash: string): Promise<ethers.TransactionReceipt>;
@@ -25,13 +30,16 @@ const isItFhenixNetwork = ref<boolean>(false);
 const eventWasAdded = ref<boolean>(false);
 const balance = ref<string>("");
 const address = ref<string>("");
+const tokenAddress = ref<string>(TokenContractDeployment.address);
 
 export default function useChain() {
   return {
     isItFhenixNetwork,
     balance,
     address,
-
+    tokenAddress,
+    mintEncrypted,
+    getTokenBalance,
     fnxConnect,
     initFHEClient,
     getFheClient,
@@ -54,6 +62,63 @@ function initFHEClient() {
 
 function getFheClient() {
   return fheClient.value;
+}
+
+async function mintEncrypted() {
+  try {
+    if (provider !== null && fheClient.value !== null) {
+      const signer = await provider.getSigner();
+      const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+      const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
+
+      let encryptedAmount = await fheClient.value.encrypt_uint32(10);
+
+      let tx = await tokenWithSigner.mintEncryptedDebug(encryptedAmount);
+      await tx.wait();
+    }
+  } catch (error) {
+    console.error("Error minting encrypted:", error);
+  }
+}
+
+async function getTokenBalance() {
+  try {
+    if (provider !== null && fheClient.value !== null) {
+      const tokenAddress = TokenContractDeployment.address;
+      const account = address.value;
+
+      const signer = await provider.getSigner();
+      const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+      const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
+
+      let permit = fheClient.value.getPermit(tokenAddress);
+
+      if (!permit) {
+        try {
+          permit = await generatePermit(tokenAddress, provider, signer);
+          fheClient.value.storePermit(permit);
+        } catch (e) {
+          console.error("Error generating permit:", e);
+        }
+      }
+
+      if (!permit) {
+        console.error("Error getting permit");
+        return "error";
+      }
+
+      const balanceSealed = await tokenWithSigner.balanceOfEncrypted(account, permit);
+
+      const balance = fheClient.value.unseal(tokenAddress, balanceSealed);
+
+      console.log(`Balance: ${balance.toString()}`);
+
+      return balance.toString();
+    }
+  } catch (error) {
+    console.error("Error getting token balance:", error);
+    return "-1";
+  }
 }
 
 async function fnxConnect() {

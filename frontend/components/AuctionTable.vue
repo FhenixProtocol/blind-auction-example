@@ -19,7 +19,7 @@
             <td v-for="header in headers" :key="header.key">{{ item[header.key] }}</td>
             <td>
               <img variant="primary" @click="showModal" src="@/assets/bid.svg" class="editIcon" />
-              <BidModal v-model="state.isModalVisible" :auctionData="{ title: 'test' }" />
+              <BidModal v-model="state.isModalVisible" :auctionData="{ contract: item.contract }" :on-done="onDone" />
             </td>
           </tr>
         </template>
@@ -40,6 +40,7 @@ const props = defineProps({
     default: () => [],
   },
   loading: Boolean,
+  onDone: { Function, required: false },
   headers: {
     type: Array,
     default: () => [
@@ -57,7 +58,7 @@ const state = reactive({
   isModalVisible: false,
 });
 
-const showModal = (item) => {
+const showModal = () => {
   state.isModalVisible = true;
 };
 </script>

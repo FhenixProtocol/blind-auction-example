@@ -6,3 +6,9 @@ cache
 artifacts
 typechain-types
 deployments
+/frontend/contracts/Auction.ts
+/frontend/contracts/FHERC20.ts
+/frontend/.nuxt
+/backend/records
+/frontend/contracts/FHERC20_DEPLOY.json
+/frontend/contracts/Auction.json

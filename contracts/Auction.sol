@@ -22,6 +22,7 @@ contract Auction is Permissioned {
     euint32 internal eMaxEuint32;
     uint256 public auctionEndTime;
     IFHERC20 internal _wfhenix;
+    address internal NO_BID_ADDRESS;
 
     // When auction is ended this will contain the PLAINTEXT winner address
     address public winnerAddress;
@@ -34,6 +35,7 @@ contract Auction is Permissioned {
         auctionEndTime = block.timestamp + biddingTime;
         CONST_0_ENCRYPTED = FHE.asEuint32(0);
         highestBid = CONST_0_ENCRYPTED;
+        NO_BID_ADDRESS = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
         for (uint i = 0; i < 5; i++) {
             defaultAddress.values[i] = CONST_0_ENCRYPTED;
             highestBidder.values[i] = CONST_0_ENCRYPTED;
@@ -54,7 +56,7 @@ contract Auction is Permissioned {
     }
 
     modifier auctionNotEnded() {
-        require(winnerAddress == address(0), "Auction already ended");
+        require(winnerAddress == address(0), "Auction not ended");
         _;
     }
 
@@ -136,8 +138,8 @@ contract Auction is Permissioned {
     external
     view
     auctionEnded
-    returns (uint256) {
-        return FHE.decrypt(highestBid);
+    returns (uint256, address) {
+        return (FHE.decrypt(highestBid), winnerAddress);
     }
 
     function endAuction()
@@ -147,6 +149,9 @@ contract Auction is Permissioned {
     auctionNotEnded
     {
         winnerAddress = ConfAddress.unsafeToAddress(highestBidder);
+        if (winnerAddress == address(0)) {
+          winnerAddress = NO_BID_ADDRESS;
+        }
         // The cards can be revealed now, we can safely reveal the bidder
         emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
     }
@@ -158,6 +163,9 @@ contract Auction is Permissioned {
     auctionNotEnded
     {
         winnerAddress = ConfAddress.unsafeToAddress(highestBidder);
+        if (winnerAddress == address(0)) {
+          winnerAddress = NO_BID_ADDRESS;
+        }
         // The cards can be revealed now, we can safely reveal the bidder
         emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
     }

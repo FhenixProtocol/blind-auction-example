@@ -8,6 +8,7 @@ export default defineNuxtConfig({
       src: "plugins/useBootstrap.client.ts",
       mode: "client",
     },
+    '~/plugins/bs-tooltips.js'
   ],
   modules: ["@pinia/nuxt", "@bootstrap-vue-next/nuxt"],
   runtimeConfig: {

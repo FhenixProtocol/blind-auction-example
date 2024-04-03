@@ -26,8 +26,8 @@ async function initREST() {
     const owner = req.query.owner;
     let result = new Array();
     for await (const [_, value] of db.iterator()) {
-      console.log(`Value is ${value}`);
-      if (value.owner === owner) {
+      console.log(`Value is`, value);
+      if (value.owner.toLowerCase() === owner.toLowerCase()) {
         console.log(`In`);
         result.push(value);
       }
@@ -40,13 +40,22 @@ async function initREST() {
     const owner = req.query.owner;
     let result = new Array();
     for await (const [_, value] of db.iterator()) {
-      if (value.owner !== owner) {
+      if (value.owner.toLowerCase() !== owner.toLowerCase()) {
         result.push(value);
       }
     }
     console.log(`Output of get thier is ${JSON.stringify(result)}`);
     res.json({ result: "success", output: JSON.stringify(result) });
   });
+
+  app.get("/get-all", async (req, res, _next) => {
+    let result = new Array();
+    for await (const [_, value] of db.iterator()) {
+      result.push(value);
+    }
+    console.log(`Output of all is ${JSON.stringify(result)}`);
+    res.json({ result: "success", output: JSON.stringify(result) });
+  });  
 
   app.get("/clear", async (_req, res, _next) => {
     db.clear();

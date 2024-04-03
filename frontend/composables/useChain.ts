@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { ethers } from "ethers";
 
 import type { SupportedProvider } from "fhenixjs";
-import { FhenixClient, generatePermit } from "fhenixjs";
+import { FhenixClient, generatePermit, getPermit, getAllPermits } from "fhenixjs";
 
 import AuctionArtifact from "~/contracts/Auction.json";
 import ExampleToken from "~/contracts/FHERC20.json";
@@ -13,6 +13,14 @@ import {
   Auction__factory,
   type ExampleToken as TokenContract,
 } from "../../typechain-types";
+
+
+const NO_WINNER = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+
+type WinningBid = {
+  bid: number,
+  address: string
+};
 
 type ExtendedProvider = SupportedProvider & {
   getTransactionReceipt(txHash: string): Promise<ethers.TransactionReceipt>;
@@ -54,6 +62,8 @@ export default function useChain() {
     getFheClient,
     getBalance,
     getProvider,
+    getAuctionWinner,
+    NO_WINNER
   };
 }
 
@@ -91,13 +101,22 @@ async function isAuctionOver() {
   }
 }
 
-async function getAuctionWinner(contract: string): Promise<string | undefined> {
+async function getAuctionWinner(contract: string): Promise<WinningBid | undefined> {
   try {
     if (provider !== null && fheClient.value !== null && address.value !== "") {
       const signer = await provider.getSigner();
       const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
 
-      return await auctionContract.getWinner(address.value);
+      let winner = { bid: 0, address: "", };
+      //try { winner.address = await auctionContract.getWinner(); } catch (err) { console.log("IGNORE ->" ,err) };
+      try { 
+        const winnerResult = await auctionContract.getWinningBid(); 
+        winner.bid = winnerResult[0];
+        winner.address = winnerResult[1];
+      }
+        catch (err) { /* console.log("IGNORE ->" ,err)  */
+      }
+      return winner;
     } else {
       console.error("Error ending auction: provider or fheClient not found");
       return undefined;
@@ -114,7 +133,7 @@ async function endAuction(contract: string) {
       const signer = await provider.getSigner();
       const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
 
-      await auctionContract.endAuction(address.value);
+      return await auctionContract.debugEndAuction();
     } else {
       console.error("Error ending auction: provider or fheClient not found");
     }
@@ -125,14 +144,20 @@ async function endAuction(contract: string) {
 
 async function getMyBid(contract: string): Promise<string> {
   try {
+
     if (provider !== null && fheClient.value !== null && address.value !== "") {
       const signer = await provider.getSigner();
       const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
 
-      const balance = await auctionContract.getMyBidDebug(address.value);
+      let balance = -1;
+      const permits = getAllPermits();
 
-      console.log(`bid: ${balance.toString()}`);
-
+      const permit = permits.has(contract) ? await getPermit(contract, provider) : undefined;
+      if (permit) {
+        balance = await auctionContract.getMyBid(address.value, fheClient.value.extractPermitPermission(permit));
+      } else {
+        console.log("NO PERMIT");
+      }
       return balance.toString();
     } else {
       console.error("Error getting bid: provider or fheClient not found");
@@ -150,10 +175,9 @@ async function mintEncrypted() {
       const signer = await provider.getSigner();
       const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
-
-      let encryptedAmount = await fheClient.value.encrypt_uint32(10);
-
+      let encryptedAmount = await fheClient.value.encrypt_uint32(100);
       let tx = await tokenWithSigner.mintEncryptedDebug(encryptedAmount);
+      console.log(tx);
       await tx.wait();
     }
   } catch (error) {
@@ -200,6 +224,10 @@ async function bidEncrypted(contract: string, amount: number) {
 
   tx = await auctionWithSigner.bid(encryptedAmount);
   await tx.wait();
+
+  // Add permit for this contract so we can query it for our bid later
+  let permit = await getPermit(contract, provider);
+  fheClient.value.storePermit(permit);
 }
 
 async function getTokenBalance() {
@@ -208,28 +236,20 @@ async function getTokenBalance() {
       const tokenAddress = TokenContractDeployment.address;
       const account = address.value;
 
+      console.log(TokenContractDeployment.address);
       const signer = await provider.getSigner();
       const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
 
-      let permit = fheClient.value.getPermit(tokenAddress);
-
-      if (!permit) {
-        try {
-          permit = await generatePermit(tokenAddress, provider, signer);
-          fheClient.value.storePermit(permit);
-        } catch (e) {
-          console.error("Error generating permit:", e);
-        }
-      }
+      let permit = await getPermit(tokenAddress, provider);
+      fheClient.value.storePermit(permit);
 
       if (!permit) {
         console.error("Error getting permit");
         return "error";
       }
 
-      const balanceSealed = await tokenWithSigner.balanceOfEncrypted(account, permit);
-
+      const balanceSealed = await tokenWithSigner.balanceOfEncrypted(account, fheClient.value.extractPermitPermission(permit));
       const balance = fheClient.value.unseal(tokenAddress, balanceSealed);
 
       console.log(`Balance: ${balance.toString()}`);
@@ -251,11 +271,14 @@ async function fnxConnect() {
     if (provider === null) return;
 
     const chainId = await provider.send("eth_chainId", []);
+    console.log("chainId", Number(chainId));
+    console.log("fnxChainId", Number(fnxChainId));
     if (Number(chainId) !== Number(fnxChainId)) {
       await addFhenixChain();
     }
+
     mmChainId.value = Number(chainId);
-    await switchEthereumChain(Number(chainId));
+    await switchEthereumChain(Number(fnxChainId));
     if (!eventWasAdded.value) {
       eventWasAdded.value = true;
       setupMetaMaskListeners();
@@ -274,7 +297,7 @@ async function addFhenixChain() {
       const chainData = [
         {
           chainId: "0x" + Number(fnxChainId).toString(16),
-          chainName: "Fhenix Network",
+          chainName: "Fhenix Network - Hardhat",
           nativeCurrency: { name: "FHE Token", symbol: "FHE", decimals: 18 },
           rpcUrls: [networkRPC],
           blockExplorerUrls: [explorerURL],
@@ -315,6 +338,7 @@ async function setupMetaMaskListeners() {
     console.log("Account changed:", accounts[0]);
     // @ts-ignore
     provider = new ethers.BrowserProvider(window.ethereum);
+    address.value = accounts[0];
   });
 
   // Listen for chain changes

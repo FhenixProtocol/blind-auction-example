@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require("cors");
 
-
+const SERVER_PORT = 1337;
 const app = express();
 
 app.use(cors());
@@ -62,8 +62,14 @@ async function initREST() {
     res.json({ result: "success" });
   });
 
-  app.listen(1337, () => {
-    console.log(`Server running on port 1337`);
+  app.get("/health", async (_req, res, _next) => {
+    console.log("Health Check!");
+    res.json({ result: "success" });
+ });
+
+
+  app.listen(SERVER_PORT, () => {
+    console.log(`Server running on port ${SERVER_PORT}`);
   });
 }
 

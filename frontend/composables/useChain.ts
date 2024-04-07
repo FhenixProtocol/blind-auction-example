@@ -43,7 +43,7 @@ const isItFhenixNetwork = ref<boolean>(false);
 const eventWasAdded = ref<boolean>(false);
 const balance = ref<string>("");
 const address = ref<string>("");
-const tokenAddress = ref<string>(TokenContractDeployment.address);
+const tokenAddress = ref<string>(config.public.NUXT_ENV_FHE_TOKEN_CONTRACT_ADDRESS as string);
 
 export default function useChain() {
   return {

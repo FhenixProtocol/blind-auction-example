@@ -16,7 +16,7 @@
     "task:endAuction": "hardhat task:endAuction",
 
     "updateContracts": "cp artifacts/contracts/ExampleToken.sol/ExampleToken.json frontend/contracts/FHERC20.json && cp deployments/localfhenix/ExampleToken.json frontend/contracts/FHERC20_DEPLOY.json && cp artifacts/contracts/Auction.sol/Auction.json frontend/contracts/",
-    "updateContractTypes": "cp typechain-types/contracts/Auction.ts frontend/contracts/Auction.ts && cp typechain-types/contracts/ExampleToken.ts frontend/contracts/FHERC20.ts",
+    "updateContractTypes": "cp typechain-types/contracts/Auction.ts frontend/contracts/Auction.ts && cp typechain-types/factories/contracts/Auction__factory.ts frontend/contracts/Auction__factory.ts && cp typechain-types/contracts/ExampleToken.ts frontend/contracts/FHERC20.ts",
     "localfhenix:start": "hardhat localfhenix:start",
     "localfhenix:stop": "hardhat localfhenix:stop"
   },

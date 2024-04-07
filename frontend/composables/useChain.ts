@@ -12,7 +12,7 @@ import {
   type Auction as AuctionContract,
   Auction__factory,
   type ExampleToken as TokenContract,
-} from "../../typechain-types";
+} from "~/contracts/";
 
 
 const NO_WINNER = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";

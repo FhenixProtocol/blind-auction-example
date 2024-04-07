@@ -87,7 +87,7 @@ async function isAuctionOver() {
   try {
     if (provider !== null && fheClient.value !== null) {
       const signer = await provider.getSigner();
-      const auctionContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+      const auctionContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
 
       // todo: this doesn't really exist in the contract
       return await auctionContract.isAuctionOver();
@@ -173,7 +173,7 @@ async function mintEncrypted() {
   try {
     if (provider !== null && fheClient.value !== null) {
       const signer = await provider.getSigner();
-      const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+      const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
       let encryptedAmount = await fheClient.value.encrypt_uint32(100);
       let tx = await tokenWithSigner.mintEncryptedDebug(encryptedAmount);
@@ -194,7 +194,7 @@ async function deployAuctionContract(dueTime: number): Promise<Auction> {
   const signer = await provider.getSigner();
 
   const contractFactory = new Auction__factory(AuctionArtifact.abi, AuctionArtifact.bytecode, signer);
-  return (await contractFactory.deploy(TokenContractDeployment.address, dueTime)) as Auction;
+  return (await contractFactory.deploy(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, dueTime)) as Auction;
 }
 
 async function bidEncrypted(contract: string, amount: number) {
@@ -214,7 +214,7 @@ async function bidEncrypted(contract: string, amount: number) {
   let auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
   const auctionWithSigner = auctionContract.connect(signer) as AuctionContract;
 
-  const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+  const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
   const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
 
   let encryptedAmount = await fheClient.value.encrypt_uint32(amount);
@@ -233,12 +233,11 @@ async function bidEncrypted(contract: string, amount: number) {
 async function getTokenBalance() {
   try {
     if (provider !== null && fheClient.value !== null) {
-      const tokenAddress = TokenContractDeployment.address;
+      const tokenAddress = config.public.FHE_TOKEN_CONTRACT_ADDRESS as string;
       const account = address.value;
 
-      console.log(TokenContractDeployment.address);
       const signer = await provider.getSigner();
-      const tokenContract = new ethers.Contract(TokenContractDeployment.address, ExampleToken.abi, signer);
+      const tokenContract = new ethers.Contract(tokenAddress, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
 
       let permit = await getPermit(tokenAddress, provider);

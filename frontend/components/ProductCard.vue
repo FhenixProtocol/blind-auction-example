@@ -41,7 +41,7 @@
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.owner)"><i class="bi bi-copy"></i></button>
     </div>
     <div v-if="!noWinner && Product.winner != ''" style="font-size: 12px">
-      Winner: {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice }} wFHE) 
+      Winner: {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} wFHE) 
     </div>
     <div v-if="noWinner" style="font-size: 12px; color: orange">
       No Winner
@@ -95,7 +95,7 @@ import { defineProps, reactive, computed  } from "vue";
 import { type AuctionType, ethAddressShortener, copyToClipboard, formatTimeForCountdown } from "~/utils/utils";
 const emit = defineEmits(['inFocus', 'submit'])
 import useChain from "~/composables/useChain";
-const { bidEncrypted, endAuction, address, NO_WINNER } = useChain();
+const { bidEncrypted, endAuction, address, NO_WINNER, TOKEN_UNITS } = useChain();
 
 const props = defineProps({
   Product: {
@@ -145,10 +145,11 @@ function getImageSrc() {
 }
 
 function placeBid() {
-  console.log("value", bid.value);
+  const normalValue = bid.value * TOKEN_UNITS;
+  console.log("value", normalValue);  
   try {
     bidWait.value = true;
-    bidEncrypted(props.Product.contract, bid.value).then((result) => { 
+    bidEncrypted(props.Product.contract, normalValue).then((result) => { 
       showBid.value = false; 
       bidWait.value = false;
     });

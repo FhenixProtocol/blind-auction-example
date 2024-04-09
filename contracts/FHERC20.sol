@@ -2,6 +2,9 @@
 pragma solidity ^0.8.20;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 import { FHE, euint32, inEuint32 } from "@fhenixprotocol/contracts/FHE.sol";
 import { Permissioned, Permission } from "@fhenixprotocol/contracts/access/Permissioned.sol";
 
@@ -19,11 +22,25 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
     // A mapping from address (owner) to a mapping of address (spender) to an encrypted amount.
     mapping(address => mapping(address => euint32)) private _allowed;
     euint32 private totalEncryptedSupply = FHE.asEuint32(0);
+    bool _autoWrap = true;
+    address public contractOwner;
+
+    uint factor = (10 ** 12);
 
     constructor(
         string memory name,
         string memory symbol
-    ) ERC20(name, symbol) {}
+    ) ERC20(name, symbol) {
+        contractOwner = msg.sender;
+    }
+
+    function enableAutoWrapping() public onlyContractOwner {
+        _autoWrap = true;
+    }
+
+    function diableAutoWrapping() public onlyContractOwner {
+        _autoWrap = false;
+    }
 
     function _allowanceEncrypted(address owner, address spender) public view virtual returns (euint32) {
         return _allowed[owner][spender];
@@ -79,14 +96,19 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
 
         _burn(msg.sender, amount);
         euint32 eAmount = FHE.asEuint32(amount);
-        _encBalances[msg.sender] = _encBalances[msg.sender] + eAmount;
-        totalEncryptedSupply = totalEncryptedSupply + eAmount;
+        unchecked {
+            if (!FHE.isInitialized(_encBalances[msg.sender])) {
+                _encBalances[msg.sender] = FHE.asEuint32(0);
+            }
+            _encBalances[msg.sender] = _encBalances[msg.sender] + eAmount;
+            totalEncryptedSupply = totalEncryptedSupply + eAmount;
+        }
     }
 
     function unwrap(uint32 amount) public {
         euint32 encAmount = FHE.asEuint32(amount);
 
-        euint32 amountToUnwrap = FHE.select(_encBalances[msg.sender].gt(encAmount), FHE.asEuint32(0), encAmount);
+        euint32 amountToUnwrap = FHE.select(_encBalances[msg.sender].lt(encAmount), FHE.asEuint32(0), encAmount);
 
         _encBalances[msg.sender] = _encBalances[msg.sender] - amountToUnwrap;
         totalEncryptedSupply = totalEncryptedSupply - amountToUnwrap;
@@ -94,9 +116,20 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
         _mint(msg.sender, FHE.decrypt(amountToUnwrap));
     }
 
-//    function mint(uint256 amount) public {
-//        _mint(msg.sender, amount);
-//    }
+    receive() external payable {
+        require(msg.value > 0, string(abi.encodePacked("Send ", symbol()," to buy tokens"))); 
+        uint256 actualAmount = msg.value / factor;
+        _mint(msg.sender, uint32(actualAmount));
+        if (_autoWrap) {
+            wrap(uint32(actualAmount));
+        }
+    }
+
+    function withdraw(uint32 tokenAmount) public {
+        _burn(msg.sender, tokenAmount);
+        uint256 actualAmount = tokenAmount * factor;
+        payable(msg.sender).transfer(actualAmount);
+    }
 
     function _mintEncrypted(address to, inEuint32 memory encryptedAmount) internal {
         euint32 amount = FHE.asEuint32(encryptedAmount);
@@ -130,6 +163,12 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
     ) virtual public view onlyPermitted(auth, account) returns (bytes memory) {
         return _encBalances[account].seal(auth.publicKey);
     }
+
+    modifier onlyContractOwner() {
+        require(msg.sender == contractOwner);
+        _;
+    }
+
 
     //    // Returns the total supply of tokens, sealed and encrypted for the caller.
     //    // todo: add a permission check for total supply readers

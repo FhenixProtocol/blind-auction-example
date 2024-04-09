@@ -21,6 +21,20 @@
             <div v-if="address !== ''">Account address: {{ ethAddressShortener(address) }}</div>
             <button class="btn rounded-circle btn-xs" @click="copyToClipboard(address)"><i class="bi bi-copy" ></i></button>
           </div>
+          <div style="display: flex; align-items: center; font-size: 12px">
+            <div>Wallet balance: {{  balance }} tFHE</div>
+            <BButton
+              class="m-md-2 btn-xs"
+              v-if="isItFhenixNetwork"
+              pill
+              variant="success"
+              @click="goToFaucet();"
+              :disabled="!isItFhenixNetwork"
+            >
+              Go to faucet
+            </BButton>
+
+          </div>
         </div>
 
         <div class="small-title">Auction Token:</div>
@@ -44,10 +58,10 @@
             v-if="isItFhenixNetwork"
             pill
             variant="success"
-            @click="mintEncryptedAndRefresh"
+            @click="wrapAndRefresh"
             :disabled="!isItFhenixNetwork || minting"
           >
-            {{ minting ? "Minting..." : "Mint 100 Tokens" }}
+            {{ minting ? "Wrapping..." : "Wrap 10 Tokens" }}
         </BButton>
 
         </div>
@@ -97,7 +111,7 @@ import AuctionTable from "~/components/AuctionTable.vue";
 import AddProductModal from "~/components/AddProductModal.vue";
 import { type AuctionType, ethAddressShortener, copyToClipboard } from "~/utils/utils";
 
-const { address, fnxConnect, isItFhenixNetwork, getTokenBalance, tokenAddress, mintEncrypted, getAuctionWinner, getMyBid } = useChain();
+const { address, fnxConnect, isItFhenixNetwork, getTokenBalance, tokenAddress, mintEncrypted, getAuctionWinner, getMyBid, balance, getBalance, TOKEN_UNITS, wrap } = useChain();
 const { getMyProducts, getTheirProducts, getAllProducts, clearDb } = useBackend();
 //const { dark, toggleTheme } = useThemeToggle();
 
@@ -130,7 +144,7 @@ const state = reactive({
 });
 
 
-function placeBid(address) {
+function placeBid(address: string) {
   console.log("placeBid", address);
 }
 
@@ -175,12 +189,12 @@ async function refreshProducts() {
         const result = await getAuctionWinner(state.products[i].contract);
         if (result) {
           state.products[i].winner = result.address;
-          state.products[i].winningPrice = result.bid;
+          state.products[i].winningPrice = result.bid / TOKEN_UNITS;
         }
       } catch (err) {}
 
       try {
-        state.products[i].myBid = await getMyBid(state.products[i].contract);
+        state.products[i].myBid = (Number(await getMyBid(state.products[i].contract)) / TOKEN_UNITS).toFixed(3);
       } catch (err) {
         console.log(err);
       }
@@ -192,10 +206,21 @@ async function refreshProducts() {
   }
 }
 
+function goToFaucet() {
+  window.open('https://faucet.fhenix.zone', '_blank');
+}
 async function mintEncryptedAndRefresh() {
   minting.value = true;
   await mintEncrypted();
   await refreshTokenBalance();
+  minting.value = false;
+}
+
+async function wrapAndRefresh() {
+  minting.value = true;
+  await wrap();
+  await refreshTokenBalance();
+  balance.value = await getBalance();
   minting.value = false;
 }
 

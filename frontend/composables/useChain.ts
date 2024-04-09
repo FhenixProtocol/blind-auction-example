@@ -13,9 +13,11 @@ import {
   Auction__factory,
   type ExampleToken as TokenContract,
 } from "~/contracts/";
+import { ContractTransactionResponse } from "ethers";
 
 
 const NO_WINNER = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+const TOKEN_UNITS = 1_000_000;
 
 type WinningBid = {
   bid: number,
@@ -52,6 +54,7 @@ export default function useChain() {
     address,
     tokenAddress,
     mintEncrypted,
+    wrap,
     getTokenBalance,
     deployAuctionContract,
     bidEncrypted,
@@ -63,7 +66,8 @@ export default function useChain() {
     getBalance,
     getProvider,
     getAuctionWinner,
-    NO_WINNER
+    NO_WINNER,
+    TOKEN_UNITS
   };
 }
 
@@ -169,13 +173,39 @@ async function getMyBid(contract: string): Promise<string> {
   }
 }
 
+async function wrap() {
+  try {
+    if (provider !== null) {
+
+    
+      const msg = {
+        to: config.public.FHE_TOKEN_CONTRACT_ADDRESS as string,
+        value: ethers.parseEther("10.0").toString(),
+        gasLimit: 500000,
+      };
+      const signer = await provider.getSigner();
+
+      const ContractLogger = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
+      ContractLogger.on('MyLog', (message, value) => {
+        console.log(`New MyLog Event: ${message} with value ${value}`);
+      });
+
+      const tx = await signer.sendTransaction(msg);
+      await tx.wait();
+      
+    }
+  } catch (error) {
+    console.error("Error wrapping:", error);
+  }
+}
+
 async function mintEncrypted() {
   try {
     if (provider !== null && fheClient.value !== null) {
       const signer = await provider.getSigner();
       const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
-      let encryptedAmount = await fheClient.value.encrypt_uint32(100);
+      let encryptedAmount = await fheClient.value.encrypt_uint32(10);
       let tx = await tokenWithSigner.mintEncryptedDebug(encryptedAmount);
       console.log(tx);
       await tx.wait();
@@ -253,7 +283,7 @@ async function getTokenBalance() {
 
       console.log(`Balance: ${balance.toString()}`);
 
-      return balance.toString();
+      return Number(balance / BigInt(TOKEN_UNITS)).toFixed(3);
     }
   } catch (error) {
     console.error("Error getting token balance:", error);
@@ -360,7 +390,7 @@ async function getBalance(): Promise<string> {
       const balance = await provider.getBalance(address.value);
 
       if (balance) {
-        returnBalance = `${Number(ethers.formatEther(balance))} ETH`;
+        returnBalance = (Number(ethers.formatEther(balance))).toFixed(3);
       }
       console.log(`Balance: ${returnBalance}`);
     }

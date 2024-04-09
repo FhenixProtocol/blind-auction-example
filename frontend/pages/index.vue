@@ -145,7 +145,7 @@ const state = reactive({
 
 
 function placeBid(address: string) {
-  console.log("placeBid", address);
+  refreshAll();
 }
 
 function showModal() {

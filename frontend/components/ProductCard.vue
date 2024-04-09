@@ -154,6 +154,7 @@ async function placeBid() {
       bidEncrypted(props.Product.contract, normalValue).then((result) => { 
         showBid.value = false; 
         bidWait.value = false;
+        emit('place-bid', props.Product.contract);
       });
     } catch (err) {
       bidWait.value = false;
@@ -163,7 +164,7 @@ async function placeBid() {
     alert(`Your token balance is not enough (${tokenBalance} < ${bid.value})`);
   }
   
-  //emit('place-bid', props.Product.contract);
+
 }
 
 async function endBid() {

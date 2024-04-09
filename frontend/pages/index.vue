@@ -61,7 +61,7 @@
             @click="wrapAndRefresh"
             :disabled="!isItFhenixNetwork || minting"
           >
-            {{ minting ? "Wrapping..." : "Wrap 10 Tokens" }}
+            {{ minting ? "Wrapping..." : "Wrap 0.1 Tokens" }}
         </BButton>
 
         </div>
@@ -82,7 +82,7 @@
       </div>
       <div style="margin-top: 10px; display: flex; gap: 20px">
         <template v-for="(product, index) in state.products">
-          <product-card @end-bid="setTimeout(refreshAll, 2000)" :Product="product" :Idx="index" :MyAuction="address.toLowerCase() == product.owner.toLowerCase()" @place-bid="placeBid" ></product-card>
+          <product-card @end-bid="endBid" :Product="product" :Idx="index" :MyAuction="address.toLowerCase() == product.owner.toLowerCase()" @place-bid="placeBid" ></product-card>
         </template>
         
       </div>
@@ -153,12 +153,22 @@ function showModal() {
 }
 
 function productAdded() {
-  setTimeout(refreshProducts, 2000);
+  const doubleRefresh = (isFirst: boolean) => {
+    refreshAll();
+    if (isFirst) {
+      setTimeout(function() { doubleRefresh(false) }, 1000);
+    }
+  }
+  setTimeout(function() { doubleRefresh(true) }, 2000);
 }
 
 function clearDbAndRefresh() {
   clearDb();
   setTimeout(refreshAll, 1000);
+}
+
+function endBid() {
+  setTimeout(refreshAll, 2000);  
 }
 
 async function refreshAll() {

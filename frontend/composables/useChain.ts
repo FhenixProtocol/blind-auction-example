@@ -181,7 +181,7 @@ async function wrap() {
     
       const msg = {
         to: config.public.FHE_TOKEN_CONTRACT_ADDRESS as string,
-        value: ethers.parseEther("10.0").toString(),
+        value: ethers.parseEther("0.1").toString(),
         gasLimit: 500000,
       };
       const signer = await provider.getSigner();

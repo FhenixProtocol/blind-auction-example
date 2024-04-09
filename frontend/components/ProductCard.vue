@@ -56,7 +56,7 @@
       <div v-if="showBid" key="showBid" style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; gap: 10px; width: 100%;">
         <template v-if="!bidWait">
           <input style="width: 100%" type="number" v-model="bid"  />
-          <button class="btn btn-success btn-sm" @click="placeBid()" :disabled="bid =='' || bid < 1">Bid</button>
+          <button class="btn btn-success btn-sm" @click="placeBid()" :disabled="bid =='' || bid < 0.1">Bid</button>
           <button class="btn btn-danger btn-sm"  @click="cancelBid()">Cancel</button>
         </template>
         <template v-else>
@@ -95,7 +95,7 @@ import { defineProps, reactive, computed  } from "vue";
 import { type AuctionType, ethAddressShortener, copyToClipboard, formatTimeForCountdown } from "~/utils/utils";
 const emit = defineEmits(['inFocus', 'submit'])
 import useChain from "~/composables/useChain";
-const { bidEncrypted, endAuction, address, NO_WINNER, TOKEN_UNITS } = useChain();
+const { bidEncrypted, endAuction, address, NO_WINNER, TOKEN_UNITS, getTokenBalance } = useChain();
 
 const props = defineProps({
   Product: {
@@ -144,20 +144,24 @@ function getImageSrc() {
   return `/images/placeholder-${((props.Idx % 3)+ 1)}.webp`;
 }
 
-function placeBid() {
-  const normalValue = bid.value * TOKEN_UNITS;
-  console.log("value", normalValue);  
-  try {
-    bidWait.value = true;
-    bidEncrypted(props.Product.contract, normalValue).then((result) => { 
-      showBid.value = false; 
+async function placeBid() {
+  const tokenBalance = await getTokenBalance() + "";
+  if (parseFloat(tokenBalance) >= bid.value) {
+    const normalValue = bid.value * TOKEN_UNITS;
+    console.log("value", normalValue);  
+    try {
+      bidWait.value = true;
+      bidEncrypted(props.Product.contract, normalValue).then((result) => { 
+        showBid.value = false; 
+        bidWait.value = false;
+      });
+    } catch (err) {
       bidWait.value = false;
-    });
-  } catch (err) {
-    bidWait.value = false;
-    console.error(err);
+      console.error(err);
+    }
+  } else {
+    alert(`Your token balance is not enough (${tokenBalance} < ${bid.value})`);
   }
-
   
   //emit('place-bid', props.Product.contract);
 }

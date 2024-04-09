@@ -184,12 +184,6 @@ async function wrap() {
         gasLimit: 500000,
       };
       const signer = await provider.getSigner();
-
-      const ContractLogger = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
-      ContractLogger.on('MyLog', (message, value) => {
-        console.log(`New MyLog Event: ${message} with value ${value}`);
-      });
-
       const tx = await signer.sendTransaction(msg);
       await tx.wait();
       

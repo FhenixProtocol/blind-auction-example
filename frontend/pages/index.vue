@@ -194,7 +194,8 @@ async function refreshProducts() {
       } catch (err) {}
 
       try {
-        state.products[i].myBid = (Number(await getMyBid(state.products[i].contract)) / TOKEN_UNITS).toFixed(3);
+        const bid = await getMyBid(state.products[i].contract);
+        state.products[i].myBid = bid === '-1' ? bid : (Number(bid) / TOKEN_UNITS).toFixed(3);
       } catch (err) {
         console.log(err);
       }

@@ -276,9 +276,11 @@ async function getTokenBalance() {
       const balanceSealed = await tokenWithSigner.balanceOfEncrypted(account, fheClient.value.extractPermitPermission(permit));
       const balance = fheClient.value.unseal(tokenAddress, balanceSealed);
 
-      console.log(`Balance: ${balance.toString()}`);
-
-      return Number(balance / BigInt(TOKEN_UNITS)).toFixed(3);
+      console.log(`Token Balance: ${balance.toString()}`);
+      
+      const normalBalance = Number(balance / BigInt(TOKEN_UNITS)).toFixed(3)
+      console.log("Normal Balance: ", normalBalance);
+      return normalBalance;
     }
   } catch (error) {
     console.error("Error getting token balance:", error);

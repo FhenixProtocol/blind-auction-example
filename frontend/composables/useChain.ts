@@ -278,7 +278,7 @@ async function getTokenBalance() {
 
       console.log(`Token Balance: ${balance.toString()}`);
       
-      const normalBalance = Number(balance / BigInt(TOKEN_UNITS)).toFixed(3)
+      const normalBalance = Number(balance * BigInt(1000) / BigInt(TOKEN_UNITS)) / 1000;
       console.log("Normal Balance: ", normalBalance);
       return normalBalance;
     }

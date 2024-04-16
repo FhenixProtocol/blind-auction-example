@@ -12,3 +12,5 @@ deployments
 /backend/records
 /frontend/contracts/FHERC20_DEPLOY.json
 /frontend/contracts/Auction.json
+/frontend/.output
+/frontend/dist

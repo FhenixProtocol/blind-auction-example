@@ -17,9 +17,9 @@
     <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px">{{ Product.name }}</div>
     <div style="height: 100px; width: 100%;  margin-bottom: 5px; position: relative;">
       <!-- <img src="@/assets/placeholder-1.webp" style="width: 100%;" /> -->
-      <img v-if="!showCounter && Product.winner != '' && !noWinner" src="@/assets/completed.webp" style="height: 100px; position: absolute; top: -10px" />
-      <img v-if="noWinner" src="@/assets/expired.webp" style="height: 100px; position: absolute; top: -10px" />
-      <img :src="getImageSrc()" style="width: 100%;" />
+      <img v-if="!showCounter && Product.winner != '' && !noWinner" src="@/assets/completed.webp" style="height: 100px; position: absolute; top: -10px; z-index: 10" />
+      <img v-if="noWinner" src="@/assets/expired.webp" style="height: 100px; position: absolute; top: -10px; z-index: 10" />
+      <img :src="getImageSrc()" style="width: 100%;" :class="disablePic ? 'disable-image' : ''"/>
       
     </div>
 
@@ -35,21 +35,21 @@
     </div>
 
     <div style="font-size: 14px">
-      Auction Contract: {{ ethAddressShortener(Product.contract) }}
+      <span style="color: orange">Auction Contract:</span> {{ ethAddressShortener(Product.contract) }}
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.contract)"><i class="bi bi-copy"></i></button>
     </div>
     <div style="font-size: 14px">
-      Owner Address: {{ ethAddressShortener(Product.owner) }}
+      <span style="color: orange">Owner Address:</span> {{ ethAddressShortener(Product.owner) }}
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.owner)"><i class="bi bi-copy"></i></button>
     </div>
     <div v-if="!noWinner && Product.winner != ''" style="font-size: 14px">
-      Winner: {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} wFHE) 
+      <span style="color: orange">Winner:</span> {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} wFHE) 
     </div>
     <div v-if="noWinner" style="font-size: 14px; color: orange">
       No Winner
     </div>
-    <div v-if="Product.myBid != '-1'" style="font-size: 14px; font-weight: bold">
-      My Bid: {{ Product.myBid }} wFHE
+    <div v-if="Product.myBid != '-1'" style="font-size: 14px; margin-top: 5px; font-weight: bold">
+      <span style="color: #d1adf7">My Bid:</span> {{ Product.myBid }} wFHE
     </div>
 
     <div style="flex: 1"></div>
@@ -106,6 +106,16 @@ const props = defineProps({
     type: Number,
     default: 0,
   }
+});
+
+const disablePic = computed( () => {
+  return !showCounter.value && (props.Product.winner != '' && props.Product.winner != "None");
+  if (showCounter.value) {
+    return false;
+  } else if (props.Product.winner != '' && props.Product.winner != "None") {
+    return true;
+  }
+  return false;
 });
 
 const isWinner = computed(() => {
@@ -187,7 +197,7 @@ watch(() => props.Product, (newVal, oldVal) => {
       const dueTimeMs = Number(props.Product.dueTime) * 1000;
       const endDate = props.Product.startDate + dueTimeMs;
       if (Date.now() < endDate) {
-        if (props.Product.winner != '') {
+        if (props.Product.winner != '' && props.Product.winner != 'None') {
           showCounter.value = false;
         } else {
           intervalId = setInterval(function() {

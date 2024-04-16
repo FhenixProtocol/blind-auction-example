@@ -1,14 +1,13 @@
 <template>
   <div class="card">
-
-    <div v-if="MyAuction && !isWinner" style="position: absolute; top: -5px; right: -10px">
+    <div v-if="MyAuction && !isWinner" style="position: absolute; top: -5px; right: -10px; z-index: 99">
       <div style="position: absolute; top: 40px; width: 100%; text-align: center; font-size: 12px;">My Auction</div>
       <div>
         <img src="@/assets/sticker-2.png" style="height: 100px;" />
       </div>
     </div>
 
-    <div v-if="isWinner" style="position: absolute; top: -5px; right: -10px">
+    <div v-if="isWinner" style="position: absolute; top: -5px; right: -10px; z-index: 99">
       <div style="position: absolute; top: 40px; width: 100%; text-align: center; font-size: 12px;">Won</div>
       <div>
         <img src="@/assets/sticker-2.png" style="height: 100px;" />
@@ -16,37 +15,40 @@
     </div>
 
     <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px">{{ Product.name }}</div>
-    <div style="height: 100px; width: 100%;  margin-bottom: 5px;">
+    <div style="height: 100px; width: 100%;  margin-bottom: 5px; position: relative;">
       <!-- <img src="@/assets/placeholder-1.webp" style="width: 100%;" /> -->
+      <img v-if="!showCounter && Product.winner != '' && !noWinner" src="@/assets/completed.webp" style="height: 100px; position: absolute; top: -10px" />
+      <img v-if="noWinner" src="@/assets/expired.webp" style="height: 100px; position: absolute; top: -10px" />
       <img :src="getImageSrc()" style="width: 100%;" />
       
     </div>
 
-    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0px; font-size: 22px;">
+    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 10px; margin-bottom: 10px; font-size: 22px;">
       <template v-if="showCounter">
         <div>Ends in:</div>
         <div style="font-family: 'Gill Sans', sans-serif">{{ countdownValue }}</div>
       </template>
       <template v-else>
-        <div>Auction Ended</div>
+        <div v-if="Product.winner == ''">Finalizing Stage</div>
+        <div v-else>Auction Ended</div>
       </template>
     </div>
 
-    <div style="font-size: 12px">
+    <div style="font-size: 14px">
       Auction Contract: {{ ethAddressShortener(Product.contract) }}
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.contract)"><i class="bi bi-copy"></i></button>
     </div>
-    <div style="font-size: 12px">
+    <div style="font-size: 14px">
       Owner Address: {{ ethAddressShortener(Product.owner) }}
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.owner)"><i class="bi bi-copy"></i></button>
     </div>
-    <div v-if="!noWinner && Product.winner != ''" style="font-size: 12px">
+    <div v-if="!noWinner && Product.winner != ''" style="font-size: 14px">
       Winner: {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} wFHE) 
     </div>
-    <div v-if="noWinner" style="font-size: 12px; color: orange">
+    <div v-if="noWinner" style="font-size: 14px; color: orange">
       No Winner
     </div>
-    <div v-if="Product.myBid != '-1'" style="font-size: 12px; font-weight: bold">
+    <div v-if="Product.myBid != '-1'" style="font-size: 14px; font-weight: bold">
       My Bid: {{ Product.myBid }} wFHE
     </div>
 
@@ -66,15 +68,9 @@
         </template>
       </div>
 
-      <div v-if="!showBid" key="notShowBid" style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around;">
-        <div v-if="showCounter && !MyAuction" style="display: flex; flex-direction: column; width: 20px">
-          <img variant="primary" @click="showBid = true" src="@/assets/bid.webp"  class="" v-tooltip:top="'Place bid'" style="cursor: pointer; width: 20px" />
-        </div>
-        
-        <div></div>
-        <div style="display: flex; flex-direction: column;  width: 40px">
-          <img v-if="MyAuction && Product.winner == ''" variant="primary" @click="endBid()" src="@/assets/end-auction.webp" class="" v-tooltip:top="'End auction'" style="cursor: pointer; width: 40px" />
-        </div>
+      <div v-if="!showBid" key="notShowBid" style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: center;">
+        <button  v-if="showCounter && !MyAuction" class="btn btn-success" @click="showBid = true" style="cursor: pointer; ">Place Bid</button>
+        <button v-if="MyAuction && Product.winner == ''" class="btn btn-danger" @click="endBid()" style="cursor: pointer; ">Finalize Auction</button>
       </div>
     </transition-group>      
   </div>
@@ -191,14 +187,18 @@ watch(() => props.Product, (newVal, oldVal) => {
       const dueTimeMs = Number(props.Product.dueTime) * 1000;
       const endDate = props.Product.startDate + dueTimeMs;
       if (Date.now() < endDate) {
-        intervalId = setInterval(function() {
-          countdownValue.value = formatTimeForCountdown(Date.now(), props.Product.startDate + dueTimeMs);
-          if (Date.now() > endDate && showCounter.value) {
-            console.log("Clearing Timer");
-            showCounter.value = false;
-            clearInterval(intervalId);
-          }
-        }, 1000);
+        if (props.Product.winner != '') {
+          showCounter.value = false;
+        } else {
+          intervalId = setInterval(function() {
+            countdownValue.value = formatTimeForCountdown(Date.now(), props.Product.startDate + dueTimeMs);
+            if (Date.now() > endDate && showCounter.value) {
+                console.log("Clearing Timer");
+                showCounter.value = false;
+                clearInterval(intervalId);
+            }
+          }, 1000);
+        }
       } else {
         showCounter.value = false;        
         if (intervalId !== null) {

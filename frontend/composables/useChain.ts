@@ -20,7 +20,7 @@ const NO_WINNER = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 const TOKEN_UNITS = 1_000_000;
 
 type WinningBid = {
-  bid: number,
+  bid: bigint,
   address: string
 };
 
@@ -106,13 +106,21 @@ async function isAuctionOver() {
   }
 }
 
-async function getAuctionWinner(contract: string): Promise<WinningBid | undefined> {
+async function getAuctionWinner(contract: string, endedCallback: Function): Promise<WinningBid | undefined> {
   try {
     if (provider !== null && fheClient.value !== null && address.value !== "") {
       const signer = await provider.getSigner();
       const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
 
-      let winner = { bid: 0, address: "", };
+      auctionContract.on("AuctionEnded", (winner, bid) => {
+        console.log(`The winner: ${winner} won with bid ${bid}`);
+        if (endedCallback) {
+          endedCallback(winner, bid);
+        }
+      })
+
+      let winner = { bid: BigInt(0), address: "", };
+      
       //try { winner.address = await auctionContract.getWinner(); } catch (err) { console.log("IGNORE ->" ,err) };
       try { 
         const winnerResult = await auctionContract.getWinningBid(); 
@@ -121,6 +129,7 @@ async function getAuctionWinner(contract: string): Promise<WinningBid | undefine
       }
         catch (err) { /* console.log("IGNORE ->" ,err)  */
       }
+      console.log(winner);
       return winner;
     } else {
       console.error("Error ending auction: provider or fheClient not found");

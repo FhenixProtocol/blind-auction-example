@@ -13,15 +13,15 @@
 
     <div style="display: flex; backdrop-filter: blur(7px); background-color: rgba(0,0,0,0.3); border-radius: 20px; padding: 10px; margin-bottom: 20px; filter: drop-shadow(1px 0 1px rgba(0,0,0,0.4));  ">
       <div>
-        <div style="margin-bottom: 10px">
+        <div style="margin-bottom: 10px;">
           <BButton class="btn-sm connect-btn" style="" pill @click="fnxConnect" :disabled="isItFhenixNetwork">
             {{ isItFhenixNetwork ? "Connected" : "Connect to Fhenix Network" }}
           </BButton>
-          <div style="display: flex; align-items: center; font-size: 12px">
+          <div style="display: flex; align-items: center; font-size: 14px">
             <div v-if="address !== ''">Account address: {{ ethAddressShortener(address) }}</div>
             <button class="btn rounded-circle btn-xs" @click="copyToClipboard(address)"><i class="bi bi-copy" ></i></button>
           </div>
-          <div style="display: flex; align-items: center; font-size: 12px">
+          <div style="display: flex; align-items: center; font-size: 14px">
             <div>Wallet balance: {{  balance }} tFHE</div>
             <BButton
               class="m-md-2 btn-xs"
@@ -38,12 +38,12 @@
         </div>
 
         <div class="small-title">Auction Token:</div>
-        <div style="display: flex; align-items: center; font-size: 12px">
+        <div style="display: flex; align-items: center; font-size: 14px">
           Address: {{ ethAddressShortener(state.tokenAddress) }} 
           <button class="btn rounded-circle btn-xs" @click="copyToClipboard(state.tokenAddress)"><i class="bi bi-copy" ></i></button>
         </div> 
         
-        <div style="display: flex; align-items: center; font-size: 12px">
+        <div style="display: flex; align-items: center; font-size: 14px">
           <div style="margin-right: 4px">Balance:</div>
           <div v-if="minting">
             <div class="spinner-border spinner-border-sm" role="status">
@@ -196,10 +196,12 @@ async function refreshProducts() {
     // In real world application, this should be done in the backend side
     for (var i = 0; i < state.products.length; i++) {
       try {
-        const result = await getAuctionWinner(state.products[i].contract);
+        const result = await getAuctionWinner(state.products[i].contract, (winner: string, bid: bigint) => {
+          window.location.reload(); 
+        });
         if (result) {
           state.products[i].winner = result.address;
-          state.products[i].winningPrice = result.bid / TOKEN_UNITS;
+          state.products[i].winningPrice = Number(result.bid * BigInt(1000) / BigInt(TOKEN_UNITS)) / 1000;
         }
       } catch (err) {}
 

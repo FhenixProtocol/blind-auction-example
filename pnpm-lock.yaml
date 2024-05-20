@@ -6,8 +6,8 @@ settings:
 
 devDependencies:
   '@fhenixprotocol/contracts':
-    specifier: 0.1.0-beta.3
-    version: 0.1.0-beta.3
+    specifier: 0.2.0-beta.4
+    version: 0.2.0-beta.4
   '@nomicfoundation/hardhat-chai-matchers':
     specifier: ^2.0.6
     version: 2.0.6(@nomicfoundation/hardhat-ethers@3.0.5)(chai@4.4.1)(ethers@6.11.1)(hardhat@2.22.2)
@@ -399,8 +399,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /@fhenixprotocol/contracts@0.1.0-beta.3:
-    resolution: {integrity: sha512-d7gFgTPX++VfMs450CM1gR0tCRhs7FyWU1tgf3i+wJWwLmtjMM+6pKM67+xHoRbMq7TuGRzAEZEurk3rpIfkJg==}
+  /@fhenixprotocol/contracts@0.2.0-beta.4:
+    resolution: {integrity: sha512-Sovk7Bhsbe5gFZVM4hWHy24ulaU71d8rDwSS8QgMDIBNiFfFdKLiH0oRpYlA7tFcrqxJkdlHqk5gJM62OWeSjQ==}
     dependencies:
       '@openzeppelin/contracts': 5.0.2
     dev: true

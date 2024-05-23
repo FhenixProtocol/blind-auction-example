@@ -19,7 +19,7 @@
     "bootstrap-vue-next": "0.16.3",
     "cors": "^2.8.5",
     "ethers": "^6.11.0",
-    "fhenixjs": "^0.1.0-beta.5",
+    "fhenixjs": "^0.2.0-beta.3",
     "mitt": "^3.0.1",
     "nuxt": "^3.10.1",
     "pinia": "^2.1.7",

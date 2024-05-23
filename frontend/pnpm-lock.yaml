@@ -33,8 +33,8 @@ dependencies:
     specifier: ^6.11.0
     version: 6.11.0
   fhenixjs:
-    specifier: ^0.1.0-beta.5
-    version: 0.1.0-beta.5
+    specifier: ^0.2.0-beta.3
+    version: 0.2.0-beta.3
   mitt:
     specifier: ^3.0.1
     version: 3.0.1
@@ -4018,12 +4018,12 @@ packages:
       reusify: 1.0.4
     dev: false
 
-  /fhenixjs@0.1.0-beta.5:
-    resolution: {integrity: sha512-Bp++KetxeckF+dOwCQwsN76JeYJ+2nZuV2n+AAdQrE+N0C/FlEFx45Y4omlKEea1F6ASWmPfA4CHVPUgkAIRRg==}
+  /fhenixjs@0.2.0-beta.3:
+    resolution: {integrity: sha512-qCJ1t6qbkm4HeNwX5ZJwm97zjDQiq8RJ22wW7gW3Cr9ROu0W8B6fWh/ufQJXFptmMAI9DSjPeNgt2oqHDDuydQ==}
     dependencies:
       ethers: 6.11.0
-      node-tfhe: 0.3.1
-      tfhe: 0.3.1
+      node-tfhe: 0.6.1
+      tfhe: 0.6.1
       tweetnacl: 1.0.3
       tweetnacl-util: 0.15.1
     transitivePeerDependencies:
@@ -4530,6 +4530,7 @@ packages:
   /iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
+    requiresBuild: true
     dependencies:
       safer-buffer: 2.1.2
     dev: false
@@ -5469,8 +5470,8 @@ packages:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
     dev: false
 
-  /node-tfhe@0.3.1:
-    resolution: {integrity: sha512-re5tBgPMwoSWl6b/pL13MWKnsBUv9nldAXoWkokG1aiUm9P0aOjJoz0J9+zOwV/dB0i9xN/TI//mnqF3uWAOIg==}
+  /node-tfhe@0.6.1:
+    resolution: {integrity: sha512-p2BidmylEO+3v1Q4KqErNJC8z/Y2R+b+Yd42omweeII41AbgPM12RJCmvE9GMvr/ZbAn/H762JPijLH08oBUYQ==}
     dev: false
 
   /nopt@5.0.0:
@@ -7073,8 +7074,8 @@ packages:
       source-map-support: 0.5.21
     dev: false
 
-  /tfhe@0.3.1:
-    resolution: {integrity: sha512-PqnsUVChETviwd5ebfJoj9yueUxIKPaSsfSGVmgvpUsUqAlianAx+4UH9hEmjDxgshSRDgm1Fp0/rRgCx2BYog==}
+  /tfhe@0.6.1:
+    resolution: {integrity: sha512-csHYfEbejbQl4LVb1/37LY9AxiR9RqvzXsHT1wENMtGqIjNmev3T1aXyljooGc/4HuZmG8VjlUkX6CYvG4U80g==}
     dev: false
 
   /tiny-invariant@1.3.1:

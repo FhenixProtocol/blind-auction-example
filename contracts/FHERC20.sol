@@ -31,7 +31,7 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
     function allowanceEncrypted(
         address spender,
         Permission calldata permission
-    ) public view virtual onlySender(permission) returns (bytes memory) {
+    ) public view virtual onlySender(permission) returns (string memory) {
         return FHE.sealoutput(_allowanceEncrypted(msg.sender, spender), permission.publicKey);
     }
 
@@ -127,7 +127,7 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
 
     function balanceOfEncrypted(
         address account, Permission memory auth
-    ) virtual public view onlyPermitted(auth, account) returns (bytes memory) {
+    ) virtual public view onlyPermitted(auth, account) returns (string memory) {
         return _encBalances[account].seal(auth.publicKey);
     }
 
@@ -135,7 +135,7 @@ contract FHERC20 is IFHERC20, ERC20, Permissioned {
     //    // todo: add a permission check for total supply readers
     //    function getEncryptedTotalSupply(
     //        Permission calldata permission
-    //    ) public view onlySender(permission) returns (bytes memory) {
+    //    ) public view onlySender(permission) returns (string memory) {
     //        return totalEncryptedSupply.seal(permission.publicKey);
     //    }
 }

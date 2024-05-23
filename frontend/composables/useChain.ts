@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { ethers } from "ethers";
 
-import type { SupportedProvider } from "fhenixjs";
+import type {Permit, SupportedProvider} from "fhenixjs";
 import { FhenixClient, generatePermit, getPermit, getAllPermits } from "fhenixjs";
 
 import AuctionArtifact from "~/contracts/Auction.json";
@@ -144,7 +144,6 @@ async function endAuction(contract: string) {
 
 async function getMyBid(contract: string): Promise<string> {
   try {
-
     if (provider !== null && fheClient.value !== null && address.value !== "") {
       const signer = await provider.getSigner();
       const auctionContract = new ethers.Contract(contract, AuctionArtifact.abi, signer);
@@ -152,12 +151,16 @@ async function getMyBid(contract: string): Promise<string> {
       let balance = -1;
       const permits = getAllPermits();
 
-      const permit = permits.has(contract) ? await getPermit(contract, provider) : undefined;
-      if (permit) {
-        balance = await auctionContract.getMyBid(address.value, fheClient.value.extractPermitPermission(permit));
+      let permit: Permit;
+      if (!permits.has(contract)) {
+        permit = permits[contract];
       } else {
-        console.log("NO PERMIT");
+        permit = await getPermit(contract, provider);
+        fheClient.value.storePermit(permit);
+        console.log("getMyBid: stored new permit");
       }
+
+      balance = await auctionContract.getMyBid(address.value, fheClient.value.extractPermitPermission(permit));
       return balance.toString();
     } else {
       console.error("Error getting bid: provider or fheClient not found");

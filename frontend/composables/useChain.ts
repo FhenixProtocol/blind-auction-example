@@ -152,7 +152,7 @@ async function getMyBid(contract: string): Promise<string> {
       const permits = getAllPermits();
 
       let permit: Permit;
-      if (!permits.has(contract)) {
+      if (permits.has(contract)) {
         permit = permits[contract];
       } else {
         permit = await getPermit(contract, provider);

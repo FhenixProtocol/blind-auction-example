@@ -3,9 +3,8 @@
 pragma solidity >=0.8.13 <0.9.0;
 
 import { Permissioned, Permission } from "@fhenixprotocol/contracts/access/Permissioned.sol";
-import { inEuint32, euint32, FHE } from "@fhenixprotocol/contracts/FHE.sol";
+import { inEuint32, euint32, ebool, FHE, eaddress } from "@fhenixprotocol/contracts/FHE.sol";
 import { IFHERC20 } from "@fhenixprotocol/contracts/experimental/token/FHERC20/IFHERC20.sol";
-import "./ConfAddress.sol";
 
 struct HistoryEntry {
     euint32 amount;
@@ -17,8 +16,9 @@ contract Auction is Permissioned {
     mapping(address => HistoryEntry) internal auctionHistory;
     euint32 internal CONST_0_ENCRYPTED;
     euint32 internal highestBid;
-    Eaddress internal defaultAddress;
-    Eaddress internal highestBidder;
+    // todo: why is defaultAddress needed?
+    eaddress internal defaultAddress;
+    eaddress internal highestBidder;
     euint32 internal eMaxEuint32;
     uint256 public auctionEndTime;
     IFHERC20 internal _wfhenix;
@@ -36,10 +36,10 @@ contract Auction is Permissioned {
         CONST_0_ENCRYPTED = FHE.asEuint32(0);
         highestBid = CONST_0_ENCRYPTED;
         NO_BID_ADDRESS = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
-        for (uint i = 0; i < 5; i++) {
-            defaultAddress.values[i] = CONST_0_ENCRYPTED;
-            highestBidder.values[i] = CONST_0_ENCRYPTED;
-        }
+
+        // todo verify if needed to init to something here
+        //   defaultAddress = CONST_0_ENCRYPTED;
+        //   highestBidder = CONST_0_ENCRYPTED;
 
         eMaxEuint32 = FHE.asEuint32(0xFFFFFFFF);
     }
@@ -104,10 +104,10 @@ contract Auction is Permissioned {
         // we will have an edge case when the current bid will be equal to the highestBid
         euint32 newHeighestBid = FHE.max(newBid, highestBid);
 
-        Eaddress memory eaddr = ConfAddress.toEaddress(payable(msg.sender));
+        eaddress eaddr = FHE.asEaddress(msg.sender);
         ebool wasBidChanged = newHeighestBid.gt(highestBid);
 
-        highestBidder = ConfAddress.conditionalUpdate(wasBidChanged, highestBidder, eaddr);
+        highestBidder = FHE.select(wasBidChanged, highestBidder, eaddr);
         highestBid = newHeighestBid;
     }
 
@@ -148,7 +148,7 @@ contract Auction is Permissioned {
     afterAuctionEnds
     auctionNotEnded
     {
-        winnerAddress = ConfAddress.unsafeToAddress(highestBidder);
+        winnerAddress = FHE.decrypt(highestBidder);
         if (winnerAddress == address(0)) {
           winnerAddress = NO_BID_ADDRESS;
         }
@@ -162,7 +162,7 @@ contract Auction is Permissioned {
     onlyAuctioneer
     auctionNotEnded
     {
-        winnerAddress = ConfAddress.unsafeToAddress(highestBidder);
+        winnerAddress = FHE.decrypt(highestBidder);
         if (winnerAddress == address(0)) {
           winnerAddress = NO_BID_ADDRESS;
         }

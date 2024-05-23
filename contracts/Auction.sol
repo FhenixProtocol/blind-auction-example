@@ -4,7 +4,7 @@ pragma solidity >=0.8.13 <0.9.0;
 
 import { Permissioned, Permission } from "@fhenixprotocol/contracts/access/Permissioned.sol";
 import { inEuint32, euint32, FHE } from "@fhenixprotocol/contracts/FHE.sol";
-import { IFHERC20 } from "./IFHERC20.sol";
+import { IFHERC20 } from "@fhenixprotocol/contracts/experimental/token/FHERC20/IFHERC20.sol";
 import "./ConfAddress.sol";
 
 struct HistoryEntry {

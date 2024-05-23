@@ -56,12 +56,12 @@ contract Auction is Permissioned {
     }
 
     modifier auctionNotEnded() {
-        require(winnerAddress == address(0), "Auction not ended");
+        require(winnerAddress == address(0), "Auction already ended");
         _;
     }
 
     modifier auctionEnded() {
-        require(winnerAddress != address(0), "Auction already ended");
+        require(winnerAddress != address(0), "Auction still not ended");
         _;
     }
 

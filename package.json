@@ -11,6 +11,7 @@
     "task:getBalance": "hardhat task:getBalance",
     "task:transfer": "hardhat task:transfer",
     "task:getFunds": "hardhat task:getFunds",
+    "task:simulate": "hardhat task:simulate",
 
     "task:bid": "hardhat task:bid",
     "task:endAuction": "hardhat task:endAuction",
@@ -31,7 +32,7 @@
   },
   "homepage": "https://github.com/NomicFoundation/hardhat-boilerplate#readme",
   "devDependencies": {
-    "@fhenixprotocol/contracts": "0.2.0-beta.6",
+    "@fhenixprotocol/contracts": "0.2.0-beta.9",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
@@ -45,6 +46,7 @@
     "hardhat-deploy": "^0.11.45",
     "hardhat-gas-reporter": "^1.0.10",
     "solidity-coverage": "^0.8.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "fhenixjs": "0.2.0-beta.4"
   }
 }

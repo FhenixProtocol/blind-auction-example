@@ -109,12 +109,12 @@ async function getAuctionWinner(contract: string): Promise<WinningBid | undefine
 
       let winner = { bid: 0, address: "", };
       //try { winner.address = await auctionContract.getWinner(); } catch (err) { console.log("IGNORE ->" ,err) };
-      try { 
-        const winnerResult = await auctionContract.getWinningBid(); 
+      try {
+        const winnerResult = await auctionContract.getWinningBid();
         winner.bid = winnerResult[0];
         winner.address = winnerResult[1];
-      }
-        catch (err) { /* console.log("IGNORE ->" ,err)  */
+      } catch (err) {
+        console.log("^ IGNORING this Error:", err.reason)
       }
       return winner;
     } else {
@@ -272,6 +272,7 @@ async function fnxConnect() {
       provider = new ethers.BrowserProvider(window.ethereum);
     }
     if (provider === null) return;
+    initFHEClient();
 
     const chainId = await provider.send("eth_chainId", []);
     console.log("chainId", Number(chainId));
@@ -288,7 +289,6 @@ async function fnxConnect() {
     }
     localStorage.setItem("isConnected", "1");
     balance.value = await getBalance();
-    initFHEClient();
   } catch (err) {
     console.error("Error:", err);
   }

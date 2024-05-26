@@ -6,8 +6,8 @@ settings:
 
 devDependencies:
   '@fhenixprotocol/contracts':
-    specifier: 0.2.0-beta.6
-    version: 0.2.0-beta.6
+    specifier: 0.2.0-beta.9
+    version: 0.2.0-beta.9
   '@nomicfoundation/hardhat-chai-matchers':
     specifier: ^2.0.6
     version: 2.0.6(@nomicfoundation/hardhat-ethers@3.0.5)(chai@4.4.1)(ethers@6.11.1)(hardhat@2.22.2)
@@ -35,6 +35,9 @@ devDependencies:
   fhenix-hardhat-plugin:
     specifier: 0.1.0-beta.15
     version: 0.1.0-beta.15(hardhat@2.22.2)
+  fhenixjs:
+    specifier: 0.2.0-beta.4
+    version: 0.2.0-beta.4
   hardhat:
     specifier: ^2.20.1
     version: 2.22.2(ts-node@10.9.2)(typescript@5.4.3)
@@ -399,8 +402,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /@fhenixprotocol/contracts@0.2.0-beta.6:
-    resolution: {integrity: sha512-LdMD08vXQ0ROLnjacJuJHHP3jrw9JX1spw1y3J9cFL49Y86wDyULiAFNRcNnlIZ00tb5h6xple+en4xcThPMeg==}
+  /@fhenixprotocol/contracts@0.2.0-beta.9:
+    resolution: {integrity: sha512-RqugcTFC1iE+vd5IfYf7bsjZ0zJuwnrVni6unmTNYsIQyzzknLQNti+ZcWQnIyCRufTfcK+vV8F86gJ1KDkRig==}
     dependencies:
       '@openzeppelin/contracts': 5.0.2
     dev: true
@@ -2095,6 +2098,19 @@ packages:
       - utf-8-validate
     dev: true
 
+  /fhenixjs@0.2.0-beta.4:
+    resolution: {integrity: sha512-N+PgOWI19sBzJO0S6CzS4k7iDq7pmQx1DncZTsIN5AqsYBUt1Toakd8WAnvhoLXQlWi7BOnXHTo7UHVIayQA4Q==}
+    dependencies:
+      ethers: 6.11.1
+      node-tfhe: 0.6.1
+      tfhe: 0.6.1
+      tweetnacl: 1.0.3
+      tweetnacl-util: 0.15.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
   /fill-range@7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
     engines: {node: '>=8'}
@@ -3019,6 +3035,10 @@ packages:
     resolution: {integrity: sha512-jnLtP+RcQIYH1I1zn8S8W/Sn97yJEY5GqA1X7RDmtLezV7NpgO47fFgtd+T7xGNhwpz6yGyww1In7BWOU1jiwg==}
     dev: true
 
+  /node-tfhe@0.6.1:
+    resolution: {integrity: sha512-p2BidmylEO+3v1Q4KqErNJC8z/Y2R+b+Yd42omweeII41AbgPM12RJCmvE9GMvr/ZbAn/H762JPijLH08oBUYQ==}
+    dev: true
+
   /nofilter@3.1.0:
     resolution: {integrity: sha512-l2NNj07e9afPnhAhvgVrCD/oy2Ai1yfLpuo3EpiO1jFTsB4sFz6oIfAfSZyQzVpkZQ9xS8ZS5g1jCBgq4Hwo0g==}
     engines: {node: '>=12.19'}
@@ -3730,6 +3750,10 @@ packages:
 
   /tfhe@0.3.2:
     resolution: {integrity: sha512-2FTGQKYiusf/PCrRpYFyEzTSFGHRSEMrC49O7HNsUZ8XslL94RJ0mQliE1BRLk9jhPrlZD26M2UF/EO1Gb0mRw==}
+    dev: true
+
+  /tfhe@0.6.1:
+    resolution: {integrity: sha512-csHYfEbejbQl4LVb1/37LY9AxiR9RqvzXsHT1wENMtGqIjNmev3T1aXyljooGc/4HuZmG8VjlUkX6CYvG4U80g==}
     dev: true
 
   /then-request@6.0.2:

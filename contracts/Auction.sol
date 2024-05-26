@@ -16,8 +16,6 @@ contract Auction is Permissioned {
     mapping(address => HistoryEntry) internal auctionHistory;
     euint32 internal CONST_0_ENCRYPTED;
     euint32 internal highestBid;
-    // todo: why is defaultAddress needed?
-    eaddress internal defaultAddress;
     eaddress internal highestBidder;
     euint32 internal eMaxEuint32;
     uint256 public auctionEndTime;
@@ -36,10 +34,6 @@ contract Auction is Permissioned {
         CONST_0_ENCRYPTED = FHE.asEuint32(0);
         highestBid = CONST_0_ENCRYPTED;
         NO_BID_ADDRESS = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
-
-        // todo verify if needed to init to something here
-        //   defaultAddress = CONST_0_ENCRYPTED;
-        //   highestBidder = CONST_0_ENCRYPTED;
 
         eMaxEuint32 = FHE.asEuint32(0xFFFFFFFF);
     }
@@ -95,20 +89,19 @@ contract Auction is Permissioned {
     external
     auctionNotEnded
     {
-
         euint32 spent = _wfhenix.transferFromEncrypted(msg.sender, address(this), amount);
 
         euint32 newBid = updateHistory(msg.sender, spent);
         // Can't update here highestBid directly because we need and indication whether the highestBid was changed
         // if we will change here the highestBid
         // we will have an edge case when the current bid will be equal to the highestBid
-        euint32 newHeighestBid = FHE.max(newBid, highestBid);
+        euint32 newHighestBid = FHE.max(newBid, highestBid);
+        ebool isNewHighest = newHighestBid.gt(highestBid);
 
-        eaddress eaddr = FHE.asEaddress(msg.sender);
-        ebool wasBidChanged = newHeighestBid.gt(highestBid);
+        eaddress senderEncrypted = FHE.asEaddress(msg.sender);
+        highestBidder = FHE.select(isNewHighest, senderEncrypted, highestBidder);
 
-        highestBidder = FHE.select(wasBidChanged, highestBidder, eaddr);
-        highestBid = newHeighestBid;
+        highestBid = newHighestBid;
     }
 
     function getMyBidDebug (address account)
@@ -150,8 +143,13 @@ contract Auction is Permissioned {
     {
         winnerAddress = FHE.decrypt(highestBidder);
         if (winnerAddress == address(0)) {
-          winnerAddress = NO_BID_ADDRESS;
+            winnerAddress = NO_BID_ADDRESS;
+        } else {
+            _wfhenix.transferEncrypted(auctioneer, highestBid);
         }
+
+        // note: this is where the asset in auction would be transferred to the winnerAddress
+
         // The cards can be revealed now, we can safely reveal the bidder
         emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
     }
@@ -164,8 +162,13 @@ contract Auction is Permissioned {
     {
         winnerAddress = FHE.decrypt(highestBidder);
         if (winnerAddress == address(0)) {
-          winnerAddress = NO_BID_ADDRESS;
+            winnerAddress = NO_BID_ADDRESS;
+        } else {
+            _wfhenix.transferEncrypted(auctioneer, highestBid);
         }
+
+        // note: this is where the asset in auction would be transferred to the winnerAddress
+
         // The cards can be revealed now, we can safely reveal the bidder
         emit AuctionEnded(winnerAddress, FHE.decrypt(highestBid));
     }

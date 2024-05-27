@@ -90,8 +90,8 @@ task("task:simulate").addFlag("debug", "Debugging mode")
       })
     ])
 
-    let sellerBalance = await getTokenBalance(tokenWithSigner, token.address, signer, fhenixjs);
-    console.log("seller balance before:", sellerBalance);
+    const sellerBalanceBefore = await getTokenBalance(tokenWithSigner, token.address, signer, fhenixjs);
+    console.log("seller balance before:", sellerBalanceBefore);
     console.log("finalizing auction");
     let receipt;
     try {
@@ -110,8 +110,8 @@ task("task:simulate").addFlag("debug", "Debugging mode")
     const winnerEvent = receipt.logs[0].args;
     console.log("winner:", winnerEvent[0] + ",", "bid:", winnerEvent[1]);
 
-    sellerBalance = await getTokenBalance(tokenWithSigner, token.address, signer, fhenixjs);
-    console.log("seller balance after:", sellerBalance);
-    console.log("should have sent:", await auctionWithBuyer.highestBidDebug());
+    const sellerBalanceAfter = await getTokenBalance(tokenWithSigner, token.address, signer, fhenixjs);
+    console.log("seller balance after:", sellerBalanceAfter);
+    console.log("therefore, sent to seller:", sellerBalanceAfter - sellerBalanceBefore);
   }
 );

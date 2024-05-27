@@ -40,14 +40,14 @@ task("task:simulate").addFlag("debug", "Debugging mode")
       log: true,
       skipIfAlreadyDeployed: true,
     });
-    console.log(`fherc20 contract: `, token.address);
+    console.log(`fherc20 contract:`, token.address);
 
     const tokenContract = await ethers.getContractAt("ExampleToken", token.address);
     let tokenWithSigner = tokenContract.connect(signer) as ExampleToken;
     let tokenWithBuyer = tokenContract.connect(buyer) as ExampleToken;
 
     let buyerBalance;
-    buyerBalance = await getTokenBalance(tokenWithSigner, token.address, buyer, fhenixjs);
+    buyerBalance = await getTokenBalance(tokenWithBuyer, token.address, buyer, fhenixjs);
     console.log("buyer token balance:", buyerBalance);
 
     await getTokenBalance(tokenWithSigner, token.address, signer, fhenixjs).then(b => console.log("seller token balance:", b));
@@ -69,7 +69,7 @@ task("task:simulate").addFlag("debug", "Debugging mode")
       log: true,
       skipIfAlreadyDeployed: false,
     });
-    console.log(`Auction contract: `, auction.address);
+    console.log(`Auction contract:`, auction.address);
     const sleep = new Promise(r => setTimeout(r, (2 + auctionDurationSeconds) * 1000));
 
     const auctionContract = await ethers.getContractAt("Auction", auction.address);
@@ -97,9 +97,9 @@ task("task:simulate").addFlag("debug", "Debugging mode")
     try {
       let tx;
       if (taskArguments.debug === true) {
-          tx = await auctionWithSinger.debugEndAuction();
+        tx = await auctionWithSinger.debugEndAuction();
       } else {
-          tx = await auctionWithSinger.debugEndAuction();
+        tx = await auctionWithSinger.endAuction();
       }
       receipt = await tx.wait();
     } catch (e) {

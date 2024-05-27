@@ -47,7 +47,7 @@
       No Winner
     </div>
     <div v-if="Product.myBid != '-1'" style="font-size: 12px; font-weight: bold">
-      My Bid: {{ Product.myBid }} wFHE
+      My Bid: {{ myBidLocal || Product.myBid }} wFHE
     </div>
 
     <div style="flex: 1"></div>
@@ -91,11 +91,11 @@
 </style>
 
 <script setup lang="ts">
-import { defineProps, reactive, computed  } from "vue";
+import {defineProps, reactive, computed, type Ref} from "vue";
 import { type AuctionType, ethAddressShortener, copyToClipboard, formatTimeForCountdown } from "~/utils/utils";
 const emit = defineEmits(['inFocus', 'submit'])
 import useChain from "~/composables/useChain";
-const { bidEncrypted, endAuction, address, NO_WINNER } = useChain();
+const { bidEncrypted, endAuction, address, NO_WINNER, getMyBid } = useChain();
 
 const props = defineProps({
   Product: {
@@ -126,8 +126,8 @@ const noWinner = computed( () => {
 const showCounter = ref(true);
 const showBid = ref(false);
 const bid = ref(0);
+const myBidLocal: Ref<undefined | string> = ref(undefined);
 const bidWait = ref(false);
-
 
 const countdownValue = ref("00:00:00");
 let intervalId: any | null = null;
@@ -148,9 +148,12 @@ function placeBid() {
   console.log("value", bid.value);
   try {
     bidWait.value = true;
-    bidEncrypted(props.Product.contract, bid.value).then((result) => { 
+    bidEncrypted(props.Product.contract, bid.value).then((result) => {
       showBid.value = false; 
       bidWait.value = false;
+      getMyBid(props.Product.contract).then(result => {
+        myBidLocal.value = result;
+      })
     });
   } catch (err) {
     bidWait.value = false;

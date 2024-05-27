@@ -16,7 +16,7 @@ task("task:getBalance").setAction(async function (
   const contract = (await ethers.getContractAt(
     "ExampleToken",
       erc20.address,
-  )) as unknown as unknown as ExampleToken;
+  )) as unknown as ExampleToken;
 
   let permit = await fhenixjs.generatePermit(
       erc20.address,

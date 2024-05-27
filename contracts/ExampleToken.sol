@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "./FHERC20.sol";
 import { FHE, euint32, inEuint32 } from "@fhenixprotocol/contracts/FHE.sol";
+import { FHERC20 } from "@fhenixprotocol/contracts/experimental/token/FHERC20/FHERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract ExampleToken is FHERC20, AccessControl {

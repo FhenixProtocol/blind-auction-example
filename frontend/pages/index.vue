@@ -220,7 +220,7 @@ async function refreshProducts() {
 }
 
 function goToFaucet() {
-  window.open('https://faucet.fhenix.zone', '_blank');
+  window.open('https://get-helium.fhenix.zone', '_blank');
 }
 async function mintEncryptedAndRefresh() {
   minting.value = true;

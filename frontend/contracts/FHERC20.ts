@@ -23,10 +23,6 @@ import type {
   TypedContractMethod,
 } from "../common";
 
-export type InEuint32Struct = { data: BytesLike };
-
-export type InEuint32StructOutput = [data: string] & { data: string };
-
 export type PermissionStruct = { publicKey: BytesLike; signature: BytesLike };
 
 export type PermissionStructOutput = [publicKey: string, signature: string] & {
@@ -34,11 +30,13 @@ export type PermissionStructOutput = [publicKey: string, signature: string] & {
   signature: string;
 };
 
+export type InEuint32Struct = { data: BytesLike };
+
+export type InEuint32StructOutput = [data: string] & { data: string };
+
 export interface ExampleTokenInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "DEFAULT_ADMIN_ROLE"
-      | "MINTER_ROLE"
       | "_allowanceEncrypted"
       | "allowance"
       | "allowanceEncrypted"
@@ -46,20 +44,11 @@ export interface ExampleTokenInterface extends Interface {
       | "approveEncrypted"
       | "balanceOf"
       | "balanceOfEncrypted"
-      | "contractOwner"
       | "decimals"
-      | "diableAutoWrapping"
       | "eip712Domain"
-      | "enableAutoWrapping"
-      | "getRoleAdmin"
-      | "grantRole"
-      | "hasRole"
+      | "mint"
       | "mintEncrypted"
-      | "mintEncryptedDebug"
       | "name"
-      | "renounceRole"
-      | "revokeRole"
-      | "supportsInterface"
       | "symbol"
       | "totalSupply"
       | "transfer"
@@ -69,7 +58,6 @@ export interface ExampleTokenInterface extends Interface {
       | "transferFromEncrypted(address,address,(bytes))"
       | "transferFromEncrypted(address,address,uint256)"
       | "unwrap"
-      | "withdraw"
       | "wrap"
   ): FunctionFragment;
 
@@ -78,21 +66,10 @@ export interface ExampleTokenInterface extends Interface {
       | "Approval"
       | "ApprovalEncrypted"
       | "EIP712DomainChanged"
-      | "RoleAdminChanged"
-      | "RoleGranted"
-      | "RoleRevoked"
       | "Transfer"
       | "TransferEncrypted"
   ): EventFragment;
 
-  encodeFunctionData(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "MINTER_ROLE",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "_allowanceEncrypted",
     values: [AddressLike, AddressLike]
@@ -121,56 +98,17 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "balanceOfEncrypted",
     values: [AddressLike, PermissionStruct]
   ): string;
-  encodeFunctionData(
-    functionFragment: "contractOwner",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "diableAutoWrapping",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "eip712Domain",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "enableAutoWrapping",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getRoleAdmin",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "grantRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "hasRole",
-    values: [BytesLike, AddressLike]
-  ): string;
+  encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "mintEncrypted",
-    values: [AddressLike, InEuint32Struct]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintEncryptedDebug",
     values: [InEuint32Struct]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "renounceRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "revokeRole",
-    values: [BytesLike, AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
-  ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
@@ -204,20 +142,8 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "unwrap",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdraw",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "wrap", values: [BigNumberish]): string;
 
-  decodeFunctionResult(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "MINTER_ROLE",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "_allowanceEncrypted",
     data: BytesLike
@@ -237,47 +163,17 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "balanceOfEncrypted",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "contractOwner",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "diableAutoWrapping",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "eip712Domain",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "enableAutoWrapping",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getRoleAdmin",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "mintEncrypted",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "mintEncryptedDebug",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceRole",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -305,7 +201,6 @@ export interface ExampleTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unwrap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "wrap", data: BytesLike): Result;
 }
 
@@ -344,64 +239,6 @@ export namespace EIP712DomainChangedEvent {
   export type InputTuple = [];
   export type OutputTuple = [];
   export interface OutputObject {}
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RoleAdminChangedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    previousAdminRole: BytesLike,
-    newAdminRole: BytesLike
-  ];
-  export type OutputTuple = [
-    role: string,
-    previousAdminRole: string,
-    newAdminRole: string
-  ];
-  export interface OutputObject {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RoleGrantedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RoleRevokedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
   export type Log = TypedEventLog<Event>;
@@ -482,10 +319,6 @@ export interface ExampleToken extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
-
-  MINTER_ROLE: TypedContractMethod<[], [string], "view">;
-
   _allowanceEncrypted: TypedContractMethod<
     [owner: AddressLike, spender: AddressLike],
     [bigint],
@@ -524,11 +357,7 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
 
-  contractOwner: TypedContractMethod<[], [string], "view">;
-
   decimals: TypedContractMethod<[], [bigint], "view">;
-
-  diableAutoWrapping: TypedContractMethod<[], [void], "nonpayable">;
 
   eip712Domain: TypedContractMethod<
     [],
@@ -546,53 +375,15 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
 
-  enableAutoWrapping: TypedContractMethod<[], [void], "nonpayable">;
-
-  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
-
-  grantRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  hasRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
+  mint: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
   mintEncrypted: TypedContractMethod<
-    [recipient: AddressLike, amount: InEuint32Struct],
-    [void],
-    "nonpayable"
-  >;
-
-  mintEncryptedDebug: TypedContractMethod<
-    [amount: InEuint32Struct],
+    [encryptedAmount: InEuint32Struct],
     [void],
     "nonpayable"
   >;
 
   name: TypedContractMethod<[], [string], "view">;
-
-  renounceRole: TypedContractMethod<
-    [role: BytesLike, callerConfirmation: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  revokeRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  supportsInterface: TypedContractMethod<
-    [interfaceId: BytesLike],
-    [boolean],
-    "view"
-  >;
 
   symbol: TypedContractMethod<[], [string], "view">;
 
@@ -636,24 +427,12 @@ export interface ExampleToken extends BaseContract {
 
   unwrap: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
-  withdraw: TypedContractMethod<
-    [tokenAmount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
   wrap: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
-  getFunction(
-    nameOrSignature: "DEFAULT_ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "MINTER_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "_allowanceEncrypted"
   ): TypedContractMethod<
@@ -700,14 +479,8 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "contractOwner"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "decimals"
   ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "diableAutoWrapping"
-  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "eip712Domain"
   ): TypedContractMethod<
@@ -726,55 +499,18 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "enableAutoWrapping"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "getRoleAdmin"
-  ): TypedContractMethod<[role: BytesLike], [string], "view">;
-  getFunction(
-    nameOrSignature: "grantRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "hasRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
+    nameOrSignature: "mint"
+  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "mintEncrypted"
   ): TypedContractMethod<
-    [recipient: AddressLike, amount: InEuint32Struct],
+    [encryptedAmount: InEuint32Struct],
     [void],
     "nonpayable"
   >;
-  getFunction(
-    nameOrSignature: "mintEncryptedDebug"
-  ): TypedContractMethod<[amount: InEuint32Struct], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "name"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "renounceRole"
-  ): TypedContractMethod<
-    [role: BytesLike, callerConfirmation: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "supportsInterface"
-  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
     nameOrSignature: "symbol"
   ): TypedContractMethod<[], [string], "view">;
@@ -827,9 +563,6 @@ export interface ExampleToken extends BaseContract {
     nameOrSignature: "unwrap"
   ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "withdraw"
-  ): TypedContractMethod<[tokenAmount: BigNumberish], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "wrap"
   ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
@@ -853,27 +586,6 @@ export interface ExampleToken extends BaseContract {
     EIP712DomainChangedEvent.InputTuple,
     EIP712DomainChangedEvent.OutputTuple,
     EIP712DomainChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleAdminChanged"
-  ): TypedContractEvent<
-    RoleAdminChangedEvent.InputTuple,
-    RoleAdminChangedEvent.OutputTuple,
-    RoleAdminChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleGranted"
-  ): TypedContractEvent<
-    RoleGrantedEvent.InputTuple,
-    RoleGrantedEvent.OutputTuple,
-    RoleGrantedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleRevoked"
-  ): TypedContractEvent<
-    RoleRevokedEvent.InputTuple,
-    RoleRevokedEvent.OutputTuple,
-    RoleRevokedEvent.OutputObject
   >;
   getEvent(
     key: "Transfer"
@@ -922,39 +634,6 @@ export interface ExampleToken extends BaseContract {
       EIP712DomainChangedEvent.InputTuple,
       EIP712DomainChangedEvent.OutputTuple,
       EIP712DomainChangedEvent.OutputObject
-    >;
-
-    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-    RoleAdminChanged: TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-
-    "RoleGranted(bytes32,address,address)": TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-    RoleGranted: TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-
-    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
-    RoleRevoked: TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
     >;
 
     "Transfer(address,address,uint256)": TypedContractEvent<

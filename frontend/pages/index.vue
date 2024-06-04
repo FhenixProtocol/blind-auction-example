@@ -22,7 +22,7 @@
             <button class="btn rounded-circle btn-xs" @click="copyToClipboard(address)"><i class="bi bi-copy" ></i></button>
           </div>
           <div style="display: flex; align-items: center; font-size: 14px">
-            <div>Wallet balance: {{  balance }} tFHE</div>
+            <div>Wallet balance: {{  balance }} tETH</div>
             <BButton
               class="m-md-2 btn-xs"
               v-if="isItFhenixNetwork"
@@ -51,7 +51,7 @@
             </div>
           </div>
           <div v-else>
-            {{ state.tokenBalance }} wFHE
+            {{ state.tokenBalance }} tFHE
           </div>
           <BButton
             class="m-md-2 btn-xs"

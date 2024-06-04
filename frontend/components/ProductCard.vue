@@ -43,13 +43,13 @@
       <button class="btn rounded-circle btn-xs" @click="copyToClipboard(Product.owner)"><i class="bi bi-copy"></i></button>
     </div>
     <div v-if="!noWinner && Product.winner != ''" style="font-size: 14px">
-      <span style="color: orange">Winner:</span> {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} wFHE) 
+      <span style="color: orange">Winner:</span> {{ ethAddressShortener(Product.winner) }} ({{ Product.winningPrice.toFixed(3) }} tFHE) 
     </div>
     <div v-if="noWinner" style="font-size: 14px; color: orange">
       No Winner
     </div>
     <div v-if="Product.myBid != '-1'" style="font-size: 14px; margin-top: 5px; font-weight: bold">
-      <span style="color: #d1adf7">My Bid:</span> {{ Product.myBid }} wFHE
+      <span style="color: #d1adf7">My Bid:</span> {{ Product.myBid }} tFHE
     </div>
 
     <div style="flex: 1"></div>

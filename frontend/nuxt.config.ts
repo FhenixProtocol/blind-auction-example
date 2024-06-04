@@ -14,12 +14,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       
-      NETWORK_CHAIN_BANE: process.env.NUXT_ENV_NETWORK_CHAIN_NAME || "Fhenix Network",
-      NETWORK_CHAIN_ID: process.env.NUXT_ENV_NETWORK_CHAIN_ID || "42069",
-      NETWORK_RPC_URL: process.env.NUXT_ENV_NETWORK_RPC_URL || "https://api.testnet.fhenix.zone:7747",
-      NETWORK_EXPLORER_URL: process.env.NUXT_ENV_NETWORK_EXPLORER_URL || "https://explorer.testnet.fhenix.zone",
+      NETWORK_CHAIN_NANE: process.env.NUXT_ENV_NETWORK_CHAIN_NAME || "Fhenix Helium",
+      NETWORK_CHAIN_ID: process.env.NUXT_ENV_NETWORK_CHAIN_ID || "8008135",
+      NETWORK_RPC_URL: process.env.NUXT_ENV_NETWORK_RPC_URL || "https://api.helium.fhenix.zone",
+      NETWORK_EXPLORER_URL: process.env.NUXT_ENV_NETWORK_EXPLORER_URL || "https://explorer.helium.fhenix.zone",
       BACKEND_SERVICE_URL: process.env.NUXT_ENV_BACKEND_SERVICE_URL || "https://auction-db.fhenix.zone",
-      FHE_TOKEN_CONTRACT_ADDRESS: process.env.NUXT_ENV_FHE_TOKEN_CONTRACT_ADDRESS || "0x2cc42F00be0fE77FF5Ba18e6e039f373e62c13F2"
+      FHE_TOKEN_CONTRACT_ADDRESS: process.env.NUXT_ENV_FHE_TOKEN_CONTRACT_ADDRESS || "0xd212d1e279780e7Be3f14Cdc8804fC00A239036A"
     },
   },
 });

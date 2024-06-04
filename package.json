@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/NomicFoundation/hardhat-boilerplate#readme",
   "devDependencies": {
-    "@fhenixprotocol/contracts": "0.1.0-beta.3",
+    "@fhenixprotocol/contracts": "0.2.0-beta.10",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
@@ -39,12 +39,13 @@
     "@openzeppelin/contracts": "^5.0.1",
     "chai": "^4.4.1",
     "cross-env": "^7.0.3",
-    "fhenix-hardhat-docker": "0.1.0-beta.15",
-    "fhenix-hardhat-plugin": "0.1.0-beta.15",
+    "fhenix-hardhat-docker": "0.2.0-beta.0",
+    "fhenix-hardhat-plugin": "0.2.0-beta.0",
     "hardhat": "^2.20.1",
     "hardhat-deploy": "^0.11.45",
     "hardhat-gas-reporter": "^1.0.10",
     "solidity-coverage": "^0.8.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "fhenixjs": "0.2.0-beta.4"
   }
 }

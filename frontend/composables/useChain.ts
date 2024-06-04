@@ -40,7 +40,7 @@ const fheClient = ref<FhenixClient | null>(null);
 const fnxChainId = config.public.NETWORK_CHAIN_ID;
 const networkRPC = config.public.NETWORK_RPC_URL;
 const explorerURL = config.public.NETWORK_EXPLORER_URL;
-const chainName = config.public.NETWORK_CHAIN_BANE;
+const chainName = config.public.NETWORK_CHAIN_NANE;
 const mmChainId = ref<number>(-1);
 const isItFhenixNetwork = ref<boolean>(false);
 const eventWasAdded = ref<boolean>(false);
@@ -333,7 +333,7 @@ async function addFhenixChain() {
         {
           chainId: "0x" + Number(fnxChainId).toString(16),
           chainName: chainName,
-          nativeCurrency: { name: "FHE Token", symbol: "FHE", decimals: 18 },
+          nativeCurrency: { name: "Test ETH", symbol: "tETH", decimals: 18 },
           rpcUrls: [networkRPC],
           blockExplorerUrls: [explorerURL],
         },

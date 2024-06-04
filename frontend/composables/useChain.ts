@@ -271,10 +271,15 @@ async function getTokenBalance() {
       const account = address.value;
 
       const signer = await provider.getSigner();
+      console.log(tokenAddress);
       const tokenContract = new ethers.Contract(tokenAddress, ExampleToken.abi, signer);
+      console.log(ExampleToken.abi);
+      console.log("!!!!!! 1");
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
+      console.log("!!!!!! 2");
 
       let permit = await getPermit(tokenAddress, provider);
+      console.log("!!!!!! 3");
       fheClient.value.storePermit(permit);
 
       if (!permit) {
@@ -283,7 +288,9 @@ async function getTokenBalance() {
       }
 
       const balanceSealed = await tokenWithSigner.balanceOfEncrypted(account, fheClient.value.extractPermitPermission(permit));
+      console.log("!!!!!! 4");
       const balance = fheClient.value.unseal(tokenAddress, balanceSealed);
+      console.log("!!!!!! 5");
 
       console.log(`Token Balance: ${balance.toString()}`);
       

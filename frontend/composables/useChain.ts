@@ -190,8 +190,8 @@ async function wrap() {
     
       const msg = {
         to: config.public.FHE_TOKEN_CONTRACT_ADDRESS as string,
-        value: ethers.parseEther("0.1").toString(),
-        gasLimit: 500000,
+        value: ethers.parseEther("0.001").toString(),
+        // gasLimit: 500000,
       };
       const signer = await provider.getSigner();
       const tx = await signer.sendTransaction(msg);
@@ -210,7 +210,7 @@ async function mintEncrypted() {
       const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
       let encryptedAmount = await fheClient.value.encrypt_uint32(10);
-      let tx = await tokenWithSigner.mintEncryptedDebug(encryptedAmount);
+      let tx = await tokenWithSigner.mintEncrypted(encryptedAmount);
       console.log(tx);
       await tx.wait();
     }

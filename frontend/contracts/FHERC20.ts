@@ -44,8 +44,11 @@ export interface ExampleTokenInterface extends Interface {
       | "approveEncrypted"
       | "balanceOf"
       | "balanceOfEncrypted"
+      | "contractOwner"
       | "decimals"
+      | "diableAutoWrapping"
       | "eip712Domain"
+      | "enableAutoWrapping"
       | "mint"
       | "mintEncrypted"
       | "name"
@@ -58,6 +61,7 @@ export interface ExampleTokenInterface extends Interface {
       | "transferFromEncrypted(address,address,(bytes))"
       | "transferFromEncrypted(address,address,uint256)"
       | "unwrap"
+      | "withdraw"
       | "wrap"
   ): FunctionFragment;
 
@@ -98,9 +102,21 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "balanceOfEncrypted",
     values: [AddressLike, PermissionStruct]
   ): string;
+  encodeFunctionData(
+    functionFragment: "contractOwner",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "diableAutoWrapping",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "eip712Domain",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "enableAutoWrapping",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
@@ -142,6 +158,10 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "unwrap",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdraw",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "wrap", values: [BigNumberish]): string;
 
   decodeFunctionResult(
@@ -163,9 +183,21 @@ export interface ExampleTokenInterface extends Interface {
     functionFragment: "balanceOfEncrypted",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "contractOwner",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "diableAutoWrapping",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "eip712Domain",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "enableAutoWrapping",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
@@ -201,6 +233,7 @@ export interface ExampleTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unwrap", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "wrap", data: BytesLike): Result;
 }
 
@@ -357,7 +390,11 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
 
+  contractOwner: TypedContractMethod<[], [string], "view">;
+
   decimals: TypedContractMethod<[], [bigint], "view">;
+
+  diableAutoWrapping: TypedContractMethod<[], [void], "nonpayable">;
 
   eip712Domain: TypedContractMethod<
     [],
@@ -374,6 +411,8 @@ export interface ExampleToken extends BaseContract {
     ],
     "view"
   >;
+
+  enableAutoWrapping: TypedContractMethod<[], [void], "nonpayable">;
 
   mint: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
@@ -427,6 +466,12 @@ export interface ExampleToken extends BaseContract {
 
   unwrap: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
+  withdraw: TypedContractMethod<
+    [tokenAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   wrap: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
@@ -479,8 +524,14 @@ export interface ExampleToken extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "contractOwner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "decimals"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "diableAutoWrapping"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "eip712Domain"
   ): TypedContractMethod<
@@ -498,6 +549,9 @@ export interface ExampleToken extends BaseContract {
     ],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "enableAutoWrapping"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "mint"
   ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
@@ -562,6 +616,9 @@ export interface ExampleToken extends BaseContract {
   getFunction(
     nameOrSignature: "unwrap"
   ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "withdraw"
+  ): TypedContractMethod<[tokenAmount: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "wrap"
   ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;

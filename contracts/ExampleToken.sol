@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import { FHERC20 } from "@fhenixprotocol/contracts/experimental/token/FHERC20/FHERC20.sol";
-import { FHE, euint32, inEuint32 } from "@fhenixprotocol/contracts/FHE.sol";
+import { FHE, euint128, inEuint128 } from "@fhenixprotocol/contracts/FHE.sol";
 
 contract ExampleToken is FHERC20 {
       uint factor = (10 ** 12);
@@ -21,8 +21,8 @@ contract ExampleToken is FHERC20 {
             _mint(msg.sender, amount);
         }
 
-        function mintEncrypted(inEuint32 calldata encryptedAmount) public {
-            euint32 amount = FHE.asEuint32(encryptedAmount);
+        function mintEncrypted(inEuint128 calldata encryptedAmount) public {
+            euint128 amount = FHE.asEuint128(encryptedAmount);
             if (!FHE.isInitialized(_encBalances[msg.sender])) {
                 _encBalances[msg.sender] = amount;
             } else {

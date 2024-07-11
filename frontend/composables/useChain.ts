@@ -209,7 +209,7 @@ async function mintEncrypted() {
       const signer = await provider.getSigner();
       const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
       const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
-      let encryptedAmount = await fheClient.value.encrypt_uint32(10);
+      let encryptedAmount = await fheClient.value.encrypt_uint128(10);
       let tx = await tokenWithSigner.mintEncrypted(encryptedAmount);
       console.log(tx);
       await tx.wait();
@@ -251,7 +251,7 @@ async function bidEncrypted(contract: string, amount: number) {
   const tokenContract = new ethers.Contract(config.public.FHE_TOKEN_CONTRACT_ADDRESS as string, ExampleToken.abi, signer);
   const tokenWithSigner = tokenContract.connect(signer) as TokenContract;
 
-  let encryptedAmount = await fheClient.value.encrypt_uint32(amount);
+  let encryptedAmount = await fheClient.value.encrypt_uint128(amount);
 
   let tx = await tokenWithSigner.approveEncrypted(contract, encryptedAmount);
   await tx.wait();

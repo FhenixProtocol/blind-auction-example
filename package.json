@@ -6,15 +6,12 @@
     "test": "hardhat test",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "task:deploy": "hardhat deploy",
-
     "task:mint": "hardhat task:mint",
     "task:getBalance": "hardhat task:getBalance",
     "task:transfer": "hardhat task:transfer",
     "task:getFunds": "hardhat task:getFunds",
-
     "task:bid": "hardhat task:bid",
     "task:endAuction": "hardhat task:endAuction",
-
     "updateContracts": "cp artifacts/contracts/ExampleToken.sol/ExampleToken.json frontend/contracts/FHERC20.json && cp deployments/localfhenix/ExampleToken.json frontend/contracts/FHERC20_DEPLOY.json && cp artifacts/contracts/Auction.sol/Auction.json frontend/contracts/",
     "updateContractTypes": "cp typechain-types/contracts/Auction.ts frontend/contracts/Auction.ts && cp typechain-types/factories/contracts/Auction__factory.ts frontend/contracts/Auction__factory.ts && cp typechain-types/contracts/ExampleToken.ts frontend/contracts/FHERC20.ts",
     "localfhenix:start": "hardhat localfhenix:start",
@@ -31,21 +28,21 @@
   },
   "homepage": "https://github.com/NomicFoundation/hardhat-boilerplate#readme",
   "devDependencies": {
-    "@fhenixprotocol/contracts": "0.2.0-beta.10",
+    "@fhenixprotocol/contracts": "0.2.1",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@openzeppelin/contracts": "^5.0.1",
     "chai": "^4.4.1",
     "cross-env": "^7.0.3",
     "fhenix-hardhat-docker": "0.2.0-beta.0",
     "fhenix-hardhat-plugin": "0.2.0-beta.0",
+    "fhenixjs": "0.2.0-beta.4",
     "hardhat": "^2.20.1",
     "hardhat-deploy": "^0.11.45",
     "hardhat-gas-reporter": "^1.0.10",
     "solidity-coverage": "^0.8.6",
-    "typescript": "^5.3.3",
-    "fhenixjs": "0.2.0-beta.4"
+    "typescript": "^5.3.3"
   }
 }
